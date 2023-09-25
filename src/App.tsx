@@ -1,7 +1,12 @@
-import ProjectsList from "./ProjectsList"; // Assuming the file path is correct
+import { Routes, Route } from "react-router-dom";
+import ProjectsList from "./pages/ProjectsList";
 
 function App() {
-  return <ProjectsList />;
+  return (
+    <Routes>
+      <Route path="/" element={<ProjectsList />} />
+    </Routes>
+  );
 }
 
 export default App;
