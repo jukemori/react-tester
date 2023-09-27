@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 
 function ProjectList() {
   const [projects, setProjects] = useState([]);
+  const [projectName, setProjectName] = useState("");
+  const [authenticated, setAuthenticated] = useState(true);
 
   useEffect(() => {
     axios
@@ -30,10 +32,52 @@ function ProjectList() {
       });
   };
 
+  const createProject = () => {
+    axios
+      .post("http://localhost:8000/api/projects", {
+        name: projectName,
+      })
+      .then((response) => {
+        setProjects((prevProjects) => [...prevProjects, response.data]);
+        setProjectName("");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const handleLogout = () => {
+    axios
+      .post("http://localhost:8000/api/logout")
+      .then(() => {
+        localStorage.removeItem("user");
+
+        setAuthenticated(false);
+      })
+      .catch((error) => {
+        console.error("Logout failed:", error);
+      });
+  };
+
   return (
     <div>
       <h1>Projects</h1>
-      <Link to="http://localhost:8000/api/projects/create">Create Project</Link>
+      {authenticated ? (
+        <div>
+          <input
+            type="text"
+            placeholder="Project Name"
+            value={projectName}
+            onChange={(e) => setProjectName(e.target.value)}
+          />
+
+          <button onClick={createProject}>Create Project</button>
+
+          <button onClick={handleLogout}>Logout</button>
+        </div>
+      ) : (
+        <p>Please log in to view projects.</p>
+      )}
       <ul>
         {projects.map((project) => (
           <li key={project.id}>
