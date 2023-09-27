@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 
 function CodesList() {
   const [test, setTest] = useState([]);
+  const [codeName, setCodeName] = useState("");
   const { projectID, testID } = useParams();
   const token = localStorage.getItem("token");
 
@@ -42,6 +43,28 @@ function CodesList() {
       });
   }, []);
 
+  const createCode = () => {
+    axios
+      .post(
+        `http://localhost:8000/api/projects/${projectID}/tests/${testID}/codes`,
+        {
+          code_body: codeName,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      )
+      .then((response) => {
+        setCodes((prevCodes) => [...prevCodes, response.data]);
+        setCodeName("");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   const deleteCode = (codeId) => {
     console.log("Deleting code with ID:", codeId);
     axios
@@ -72,6 +95,14 @@ function CodesList() {
           </li>
         ))}
       </ul>
+      <input
+        type="text"
+        placeholder="Code Name"
+        value={codeName}
+        onChange={(e) => setCodeName(e.target.value)}
+      />
+
+      <button onClick={createCode}>Add test</button>
     </div>
   );
 }
