@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 
 function TestsList() {
   const [project, setProject] = useState([]);
+  const [testName, setTestName] = useState("");
   const { projectID } = useParams();
   const token = localStorage.getItem("token");
 
@@ -39,6 +40,28 @@ function TestsList() {
       });
   }, []);
 
+  const createTest = () => {
+    axios
+      .post(
+        `http://localhost:8000/api/projects/${projectID}/tests`,
+        {
+          name: testName,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      )
+      .then((response) => {
+        setTests((prevTests) => [...prevTests, response.data]);
+        setTestName("");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   const deleteTest = (testId) => {
     console.log("Deleting test with ID:", testId);
     axios
@@ -71,6 +94,14 @@ function TestsList() {
           </li>
         ))}
       </ul>
+      <input
+        type="text"
+        placeholder="Test Name"
+        value={testName}
+        onChange={(e) => setTestName(e.target.value)}
+      />
+
+      <button onClick={createTest}>Add test</button>
     </div>
   );
 }

@@ -46,7 +46,12 @@ function CodesList() {
     console.log("Deleting code with ID:", codeId);
     axios
       .delete(
-        `http://localhost:8000/api/projects/${projectID}/tests/${testID}/codes/${codeId}`
+        `http://localhost:8000/api/projects/${projectID}/tests/${testID}/codes/${codeId}`,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
       )
       .then(() => {
         setCodes((prevCodes) => prevCodes.filter((code) => code.id !== codeId));
