@@ -5,10 +5,15 @@ import { Link, useParams } from "react-router-dom";
 function CodesList() {
   const [test, setTest] = useState([]);
   const { projectID, testID } = useParams();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/projects/${projectID}/tests/${testID}`)
+      .get(`http://localhost:8000/api/projects/${projectID}/tests/${testID}`, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
       .then((response) => {
         setTest(response.data);
       })
@@ -22,7 +27,12 @@ function CodesList() {
   useEffect(() => {
     axios
       .get(
-        `http://localhost:8000/api/projects/${projectID}/tests/${testID}/codes`
+        `http://localhost:8000/api/projects/${projectID}/tests/${testID}/codes`,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
       )
       .then((response) => {
         setCodes(response.data);

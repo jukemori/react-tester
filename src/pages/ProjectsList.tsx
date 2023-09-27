@@ -7,9 +7,8 @@ function ProjectList() {
   const [projectName, setProjectName] = useState("");
   const [authenticated, setAuthenticated] = useState(true);
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
     if (!token) {
       // Token is not present, so user is not authenticated
       setAuthenticated(false);
@@ -37,7 +36,11 @@ function ProjectList() {
   const deleteProject = (projectId) => {
     console.log("Deleting project with ID:", projectId);
     axios
-      .delete(`http://localhost:8000/api/projects/${projectId}`)
+      .delete(`http://localhost:8000/api/projects/${projectId}`, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
       .then(() => {
         setProjects((prevProjects) =>
           prevProjects.filter((project) => project.id !== projectId)
@@ -51,12 +54,23 @@ function ProjectList() {
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user.id;
 
+  console.log(userId);
+  console.log(token);
+
   const createProject = () => {
     axios
-      .post("http://localhost:8000/api/projects", {
-        name: projectName,
-        user_id: userId,
-      })
+      .post(
+        "http://localhost:8000/api/projects",
+        {
+          name: projectName,
+          user_id: userId,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      )
       .then((response) => {
         setProjects((prevProjects) => [...prevProjects, response.data]);
         setProjectName("");

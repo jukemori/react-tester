@@ -5,10 +5,15 @@ import { Link, useParams } from "react-router-dom";
 function TestsList() {
   const [project, setProject] = useState([]);
   const { projectID } = useParams();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/projects/${projectID}`)
+      .get(`http://localhost:8000/api/projects/${projectID}`, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
       .then((response) => {
         setProject(response.data);
       })
@@ -21,7 +26,11 @@ function TestsList() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/projects/${projectID}/tests`)
+      .get(`http://localhost:8000/api/projects/${projectID}/tests`, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
       .then((response) => {
         setTests(response.data);
       })
@@ -33,7 +42,14 @@ function TestsList() {
   const deleteTest = (testId) => {
     console.log("Deleting test with ID:", testId);
     axios
-      .delete(`http://localhost:8000/api/projects/${projectID}/tests/${testId}`)
+      .delete(
+        `http://localhost:8000/api/projects/${projectID}/tests/${testId}`,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      )
       .then(() => {
         setTests((prevTests) => prevTests.filter((test) => test.id !== testId));
       })
