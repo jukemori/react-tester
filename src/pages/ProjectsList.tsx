@@ -1,22 +1,39 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function ProjectList() {
   const [projects, setProjects] = useState([]);
   const [projectName, setProjectName] = useState("");
   const [authenticated, setAuthenticated] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/projects/")
-      .then((response) => {
-        setProjects(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      // Token is not present, so user is not authenticated
+      setAuthenticated(false);
+      navigate("/"); // Redirect to the login page
+    } else {
+      // Token is present, you may want to check its expiration here if needed
+      setAuthenticated(true);
+
+      // Fetch projects only if authenticated
+      axios
+        .get("http://localhost:8000/api/projects/", {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        })
+        .then((response) => {
+          setProjects(response.data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }, [navigate]);
 
   const deleteProject = (projectId) => {
     console.log("Deleting project with ID:", projectId);
@@ -48,14 +65,19 @@ function ProjectList() {
 
   const handleLogout = () => {
     axios
-      .post("http://localhost:8000/api/logout")
-      .then(() => {
-        localStorage.removeItem("user");
-
-        setAuthenticated(false);
+      .post("http://localhost:8000/api/logout", {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
       })
-      .catch((error) => {
-        console.error("Logout failed:", error);
+      .then((res) => {
+        localStorage.clear();
+        navigate("/");
+      })
+      .catch((err) => {
+        console.log(err);
       });
   };
 

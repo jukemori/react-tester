@@ -4,11 +4,11 @@ import { Link, useParams } from "react-router-dom";
 
 function TestsList() {
   const [project, setProject] = useState([]);
-  const { id } = useParams();
+  const { projectID } = useParams();
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/projects/${id}`)
+      .get(`http://localhost:8000/api/projects/${projectID}`)
       .then((response) => {
         setProject(response.data);
       })
@@ -21,7 +21,7 @@ function TestsList() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/projects/${id}/tests`)
+      .get(`http://localhost:8000/api/projects/${projectID}/tests`)
       .then((response) => {
         setTests(response.data);
       })
@@ -33,7 +33,7 @@ function TestsList() {
   const deleteTest = (testId) => {
     console.log("Deleting test with ID:", testId);
     axios
-      .delete(`http://localhost:8000/api/projects/${id}/tests/${testId}`)
+      .delete(`http://localhost:8000/api/projects/${projectID}/tests/${testId}`)
       .then(() => {
         setTests((prevTests) => prevTests.filter((test) => test.id !== testId));
       })
@@ -48,7 +48,9 @@ function TestsList() {
       <ul>
         {tests.map((test) => (
           <li key={test.id}>
-            <Link to={`/tests/${test.id}`}>{test.name}</Link>
+            <Link to={`/projects/${projectID}/tests/${test.id}`}>
+              <p>{test.name}</p>
+            </Link>
             <button onClick={() => deleteTest(test.id)}>Delete</button>
           </li>
         ))}

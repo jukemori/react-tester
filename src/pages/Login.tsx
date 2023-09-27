@@ -26,12 +26,14 @@ const Login = () => {
       );
 
       const user = response.data.user;
+      const token = response.data.token; // Extract the token from the response
 
       localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", token); // Store the token in localStorage
       setLoggedIn(true);
 
       console.log("User logged in:", user);
-
+      console.log("Token:", token); // Now, the token should not be null
       navigate("/projects");
     } catch (error) {
       console.error("Login failed:", error);

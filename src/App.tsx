@@ -3,6 +3,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import ProjectsList from "./pages/ProjectsList";
 import TestsList from "./pages/TestsList";
+import CodesList from "./pages/CodesList";
 
 function App() {
   return (
@@ -10,7 +11,11 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/" element={<Login />} />
       <Route path="/projects" element={<ProjectsList />} />
-      <Route path="/projects/:id" element={<TestsList />} />
+      <Route path="/projects/:projectID" element={<TestsList />} />
+      <Route
+        path="/projects/:projectID/tests/:testID"
+        element={<CodesList />}
+      />
     </Routes>
   );
 }
