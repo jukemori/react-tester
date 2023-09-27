@@ -27,11 +27,14 @@ const Registration = () => {
       );
 
       const user = response.data.user;
+      const token = response.data.token;
 
       localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", token);
       setRegistered(true);
 
       console.log("User registered:", user);
+      console.log("Token:", token);
 
       navigate("/projects");
     } catch (error) {

@@ -7,7 +7,6 @@ function ProjectList() {
   const [projectName, setProjectName] = useState("");
   const [authenticated, setAuthenticated] = useState(true);
   const navigate = useNavigate();
-
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -49,10 +48,14 @@ function ProjectList() {
       });
   };
 
+  const user = JSON.parse(localStorage.getItem("user"));
+  const userId = user.id;
+
   const createProject = () => {
     axios
       .post("http://localhost:8000/api/projects", {
         name: projectName,
+        user_id: userId,
       })
       .then((response) => {
         setProjects((prevProjects) => [...prevProjects, response.data]);
@@ -64,20 +67,30 @@ function ProjectList() {
   };
 
   const handleLogout = () => {
+    const token = localStorage.getItem("token");
+
     axios
-      .post("http://localhost:8000/api/logout", {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("token"),
-        },
-      })
+      .post(
+        "http://localhost:8000/api/logout",
+        {},
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+        }
+      )
       .then((res) => {
-        localStorage.clear();
+        // Clear both the user and token from localStorage
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+
+        // Redirect to the login page
         navigate("/");
       })
       .catch((err) => {
-        console.log(err);
+        console.error("Logout failed:", err);
       });
   };
 
