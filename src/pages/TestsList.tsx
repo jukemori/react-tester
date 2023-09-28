@@ -3,8 +3,8 @@ import axios from "axios";
 import { Link, useParams } from "react-router-dom";
 
 function TestsList() {
-  const [project, setProject] = useState([]);
-  const [testName, setTestName] = useState("");
+  const [project, setProject] = useState({});
+  const [testNames, setTestNames] = useState({});
   const { projectID } = useParams();
   const token = localStorage.getItem("token");
 
@@ -21,7 +21,7 @@ function TestsList() {
       .catch((error) => {
         console.error(error);
       });
-  }, []);
+  }, [projectID, token]);
 
   const [tests, setTests] = useState([]);
 
@@ -34,18 +34,24 @@ function TestsList() {
       })
       .then((response) => {
         setTests(response.data);
+        // Initialize testNames state with test names
+        const initialTestNames = {};
+        response.data.forEach((test) => {
+          initialTestNames[test.id] = test.name;
+        });
+        setTestNames(initialTestNames);
       })
       .catch((error) => {
         console.error(error);
       });
-  }, []);
+  }, [projectID, token]);
 
   const createTest = () => {
     axios
       .post(
         `http://localhost:8000/api/projects/${projectID}/tests`,
         {
-          name: testName,
+          name: testNames.newTest, // Use the appropriate key for the input field
         },
         {
           headers: {
@@ -55,7 +61,11 @@ function TestsList() {
       )
       .then((response) => {
         setTests((prevTests) => [...prevTests, response.data]);
-        setTestName("");
+        // Clear the input field by resetting its value
+        setTestNames((prevTestNames) => ({
+          ...prevTestNames,
+          newTest: "",
+        }));
       })
       .catch((error) => {
         console.error(error);
@@ -63,7 +73,6 @@ function TestsList() {
   };
 
   const deleteTest = (testId) => {
-    console.log("Deleting test with ID:", testId);
     axios
       .delete(
         `http://localhost:8000/api/projects/${projectID}/tests/${testId}`,
@@ -81,6 +90,36 @@ function TestsList() {
       });
   };
 
+  // In the TestsList component
+
+  const updateTestName = (testId) => {
+    const testNameToUpdate = testNames[testId];
+    console.log(testId);
+
+    axios
+      .put(
+        `http://localhost:8000/api/projects/${projectID}/tests/${testId}`,
+        {
+          name: testNameToUpdate,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      )
+      .then((response) => {
+        setTests((prevTests) =>
+          prevTests.map((test) =>
+            test.id === testId ? { ...test, name: testNameToUpdate } : test
+          )
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   return (
     <div>
       <h1>{project.name}</h1>
@@ -88,8 +127,19 @@ function TestsList() {
         {tests.map((test) => (
           <li key={test.id}>
             <Link to={`/projects/${projectID}/tests/${test.id}`}>
-              <p>{test.name}</p>
+              {test.name}
             </Link>
+            <input
+              type="text"
+              placeholder="New Test Name"
+              value={testNames[test.id] || ""}
+              onChange={(e) => {
+                const updatedTestNames = { ...testNames };
+                updatedTestNames[test.id] = e.target.value;
+                setTestNames(updatedTestNames);
+              }}
+            />
+            <button onClick={() => updateTestName(test.id)}>Update Name</button>
             <button onClick={() => deleteTest(test.id)}>Delete</button>
           </li>
         ))}
@@ -97,11 +147,12 @@ function TestsList() {
       <input
         type="text"
         placeholder="Test Name"
-        value={testName}
-        onChange={(e) => setTestName(e.target.value)}
+        value={testNames.newTest || ""}
+        onChange={(e) => {
+          setTestNames({ ...testNames, newTest: e.target.value });
+        }}
       />
-
-      <button onClick={createTest}>Add test</button>
+      <button onClick={createTest}>Add Test</button>
     </div>
   );
 }

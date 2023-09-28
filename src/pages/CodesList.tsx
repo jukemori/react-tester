@@ -7,8 +7,11 @@ function CodesList() {
   const [codeName, setCodeName] = useState("");
   const { projectID, testID } = useParams();
   const token = localStorage.getItem("token");
+  const [codes, setCodes] = useState([]);
 
   useEffect(() => {
+    console.log("testId", testID);
+    console.log("projectId", projectID);
     axios
       .get(`http://localhost:8000/api/projects/${projectID}/tests/${testID}`, {
         headers: {
@@ -17,26 +20,25 @@ function CodesList() {
       })
       .then((response) => {
         setTest(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
 
-  const [codes, setCodes] = useState([]);
-
-  useEffect(() => {
-    axios
-      .get(
-        `http://localhost:8000/api/projects/${projectID}/tests/${testID}/codes`,
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      )
-      .then((response) => {
-        setCodes(response.data);
+        // After fetching test data, fetch associated codes
+        console.log("testId2", testID);
+        axios
+          .get(
+            `http://localhost:8000/api/projects/${projectID}/tests/${testID}/codes`,
+            {
+              headers: {
+                Authorization: "Bearer " + token,
+              },
+            }
+          )
+          .then((codesResponse) => {
+            console.log(codesResponse);
+            setCodes(codesResponse.data);
+          })
+          .catch((codesError) => {
+            console.error(codesError);
+          });
       })
       .catch((error) => {
         console.error(error);

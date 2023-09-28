@@ -4,20 +4,17 @@ import { Link, useNavigate } from "react-router-dom";
 
 function ProjectList() {
   const [projects, setProjects] = useState([]);
-  const [projectName, setProjectName] = useState("");
+  const [projectNames, setProjectNames] = useState({});
   const [authenticated, setAuthenticated] = useState(true);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+
   useEffect(() => {
     if (!token) {
-      // Token is not present, so user is not authenticated
       setAuthenticated(false);
-      navigate("/"); // Redirect to the login page
+      navigate("/");
     } else {
-      // Token is present, you may want to check its expiration here if needed
       setAuthenticated(true);
-
-      // Fetch projects only if authenticated
       axios
         .get("http://localhost:8000/api/projects/", {
           headers: {
@@ -26,15 +23,20 @@ function ProjectList() {
         })
         .then((response) => {
           setProjects(response.data);
+          // Initialize projectNames state with project names
+          const initialProjectNames = {};
+          response.data.forEach((project) => {
+            initialProjectNames[project.id] = project.name;
+          });
+          setProjectNames(initialProjectNames);
         })
         .catch((error) => {
           console.error(error);
         });
     }
-  }, [navigate]);
+  }, [navigate, token]);
 
   const deleteProject = (projectId) => {
-    console.log("Deleting project with ID:", projectId);
     axios
       .delete(`http://localhost:8000/api/projects/${projectId}`, {
         headers: {
@@ -51,18 +53,48 @@ function ProjectList() {
       });
   };
 
+  const updateProjectName = (projectId) => {
+    const projectNameToUpdate = projectNames[projectId];
+
+    axios
+      .put(
+        `http://localhost:8000/api/projects/${projectId}`,
+        {
+          name: projectNameToUpdate,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      )
+      .then((response) => {
+        setProjects((prevProjects) =>
+          prevProjects.map((project) =>
+            project.id === projectId
+              ? { ...project, name: projectNameToUpdate }
+              : project
+          )
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user.id;
 
-  console.log(userId);
-  console.log(token);
+  const handleLogout = () => {
+    // ...
+  };
 
   const createProject = () => {
     axios
       .post(
         "http://localhost:8000/api/projects",
         {
-          name: projectName,
+          name: projectNames.newProject, // Use the appropriate key for the input field
           user_id: userId,
         },
         {
@@ -73,38 +105,14 @@ function ProjectList() {
       )
       .then((response) => {
         setProjects((prevProjects) => [...prevProjects, response.data]);
-        setProjectName("");
+        // Clear the input field by resetting its value
+        setProjectNames((prevProjectNames) => ({
+          ...prevProjectNames,
+          newProject: "",
+        }));
       })
       .catch((error) => {
         console.error(error);
-      });
-  };
-
-  const handleLogout = () => {
-    const token = localStorage.getItem("token");
-
-    axios
-      .post(
-        "http://localhost:8000/api/logout",
-        {},
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
-          },
-        }
-      )
-      .then((res) => {
-        // Clear both the user and token from localStorage
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
-
-        // Redirect to the login page
-        navigate("/");
-      })
-      .catch((err) => {
-        console.error("Logout failed:", err);
       });
   };
 
@@ -113,15 +121,6 @@ function ProjectList() {
       <h1>Projects</h1>
       {authenticated ? (
         <div>
-          <input
-            type="text"
-            placeholder="Project Name"
-            value={projectName}
-            onChange={(e) => setProjectName(e.target.value)}
-          />
-
-          <button onClick={createProject}>Create Project</button>
-
           <button onClick={handleLogout}>Logout</button>
         </div>
       ) : (
@@ -131,10 +130,32 @@ function ProjectList() {
         {projects.map((project) => (
           <li key={project.id}>
             <Link to={`/projects/${project.id}`}>{project.name}</Link>
+            <input
+              type="text"
+              placeholder="New Project Name"
+              value={projectNames[project.id] || ""}
+              onChange={(e) => {
+                const updatedProjectNames = { ...projectNames };
+                updatedProjectNames[project.id] = e.target.value;
+                setProjectNames(updatedProjectNames);
+              }}
+            />
+            <button onClick={() => updateProjectName(project.id)}>
+              Update Name
+            </button>
             <button onClick={() => deleteProject(project.id)}>Delete</button>
           </li>
         ))}
       </ul>
+      <input
+        type="text"
+        placeholder="Project Name"
+        value={projectNames.newProject || ""}
+        onChange={(e) => {
+          setProjectNames({ ...projectNames, newProject: e.target.value });
+        }}
+      />
+      <button onClick={createProject}>Create Project</button>
     </div>
   );
 }
