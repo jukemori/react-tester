@@ -10,42 +10,44 @@ function CodesList() {
   const [codes, setCodes] = useState([]);
 
   useEffect(() => {
-    console.log("testId", testID);
-    console.log("projectId", projectID);
-    axios
-      .get(`http://localhost:8000/api/projects/${projectID}/tests/${testID}`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((response) => {
-        setTest(response.data);
+    const fetchData = async () => {
+      try {
+        // Fetch test data
+        const testResponse = await axios.get(
+          `http://localhost:8000/api/projects/${projectID}/tests/${testID}`,
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        );
+        setTest(testResponse.data);
 
-        // After fetching test data, fetch associated codes
-        console.log("testId2", testID);
-        axios
-          .get(
-            `http://localhost:8000/api/projects/${projectID}/tests/${testID}/codes`,
-            {
-              headers: {
-                Authorization: "Bearer " + token,
-              },
-            }
-          )
-          .then((codesResponse) => {
-            console.log(codesResponse);
-            setCodes(codesResponse.data);
-          })
-          .catch((codesError) => {
-            console.error(codesError);
-          });
-      })
-      .catch((error) => {
+        // Fetch associated codes
+        const codesResponse = await axios.get(
+          `http://localhost:8000/api/projects/${projectID}/tests/${testID}/codes`,
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        );
+        setCodes(codesResponse.data);
+      } catch (error) {
         console.error(error);
-      });
-  }, []);
+      }
+    };
+
+    fetchData();
+  }, [projectID, testID, token]); // Added dependencies to re-run the effect when IDs or token change
 
   const createCode = () => {
+    console.log(
+      "Creating code with projectID:",
+      projectID,
+      "and testID:",
+      testID
+    );
     axios
       .post(
         `http://localhost:8000/api/projects/${projectID}/tests/${testID}/codes`,
@@ -92,7 +94,7 @@ function CodesList() {
       <ul>
         {codes.map((code) => (
           <li key={code.id}>
-            <p>{code.code_body}</p>
+            {code.code_body}
             <button onClick={() => deleteCode(code.id)}>Delete</button>
           </li>
         ))}
@@ -104,7 +106,7 @@ function CodesList() {
         onChange={(e) => setCodeName(e.target.value)}
       />
 
-      <button onClick={createCode}>Add test</button>
+      <button onClick={createCode}>Add code</button>
     </div>
   );
 }
