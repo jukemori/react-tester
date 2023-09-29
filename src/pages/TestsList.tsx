@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Link, useParams } from "react-router-dom";
+import {
+  fetchProject,
+  fetchTests,
+  createTest,
+  deleteTest,
+  updateTestName,
+} from "../api/testApi"; // Import the API functions from your separate file
 
 function TestsList() {
   const [project, setProject] = useState({});
@@ -9,115 +15,93 @@ function TestsList() {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:8000/api/projects/${projectID}`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((response) => {
-        setProject(response.data);
-      })
-      .catch((error) => {
+    const fetchData = async () => {
+      try {
+        const projectResponse = await fetchProject(projectID, token);
+        setProject(projectResponse);
+      } catch (error) {
         console.error(error);
-      });
+      }
+    };
+
+    fetchData();
   }, [projectID, token]);
 
   const [tests, setTests] = useState([]);
+  const [editingTestId, setEditingTestId] = useState(null);
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:8000/api/projects/${projectID}/tests`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then((response) => {
-        setTests(response.data);
+    const fetchTestsData = async () => {
+      try {
+        const testsResponse = await fetchTests(projectID, token);
+        setTests(testsResponse);
         // Initialize testNames state with test names
         const initialTestNames = {};
-        response.data.forEach((test) => {
+        testsResponse.forEach((test) => {
           initialTestNames[test.id] = test.name;
         });
         setTestNames(initialTestNames);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error(error);
-      });
+      }
+    };
+
+    fetchTestsData();
   }, [projectID, token]);
 
-  const createTest = () => {
-    axios
-      .post(
-        `http://localhost:8000/api/projects/${projectID}/tests`,
-        {
-          name: testNames.newTest, // Use the appropriate key for the input field
-        },
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      )
-      .then((response) => {
-        setTests((prevTests) => [...prevTests, response.data]);
-        // Clear the input field by resetting its value
-        setTestNames((prevTestNames) => ({
-          ...prevTestNames,
-          newTest: "",
-        }));
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const createNewTest = async () => {
+    try {
+      const response = await createTest(projectID, testNames.newTest, token);
+      setTests((prevTests) => [...prevTests, response]);
+      // Clear the input field by resetting its value
+      setTestNames((prevTestNames) => ({
+        ...prevTestNames,
+        newTest: "",
+      }));
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const deleteTest = (testId) => {
-    axios
-      .delete(
-        `http://localhost:8000/api/projects/${projectID}/tests/${testId}`,
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      )
-      .then(() => {
-        setTests((prevTests) => prevTests.filter((test) => test.id !== testId));
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const deleteTestItem = async (testId) => {
+    try {
+      await deleteTest(projectID, testId, token);
+      setTests((prevTests) => prevTests.filter((test) => test.id !== testId));
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  // In the TestsList component
+  const updateTestItemName = async (testId) => {
+    try {
+      const testNameToUpdate = testNames[testId];
+      console.log(testId);
 
-  const updateTestName = (testId) => {
-    const testNameToUpdate = testNames[testId];
-    console.log(testId);
+      const response = await updateTestName(
+        projectID,
+        testId,
+        testNameToUpdate,
+        token
+      );
+      setTests((prevTests) =>
+        prevTests.map((test) =>
+          test.id === testId ? { ...test, name: testNameToUpdate } : test
+        )
+      );
 
-    axios
-      .put(
-        `http://localhost:8000/api/projects/${projectID}/tests/${testId}`,
-        {
-          name: testNameToUpdate,
-        },
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      )
-      .then((response) => {
-        setTests((prevTests) =>
-          prevTests.map((test) =>
-            test.id === testId ? { ...test, name: testNameToUpdate } : test
-          )
-        );
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      // Reset editing state
+      setEditingTestId(null);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const startEditingTest = (testId) => {
+    setEditingTestId(testId);
+
+    // Initialize the updated test name with the current test name
+    const testNameToEdit = testNames[testId];
+    setTestNames({ ...testNames, [testId]: testNameToEdit });
   };
 
   return (
@@ -126,21 +110,31 @@ function TestsList() {
       <ul>
         {tests.map((test) => (
           <li key={test.id}>
-            <Link to={`/projects/${projectID}/tests/${test.id}`}>
-              {test.name}
-            </Link>
-            <input
-              type="text"
-              placeholder="New Test Name"
-              value={testNames[test.id] || ""}
-              onChange={(e) => {
-                const updatedTestNames = { ...testNames };
-                updatedTestNames[test.id] = e.target.value;
-                setTestNames(updatedTestNames);
-              }}
-            />
-            <button onClick={() => updateTestName(test.id)}>Update Name</button>
-            <button onClick={() => deleteTest(test.id)}>Delete</button>
+            {editingTestId === test.id ? (
+              <>
+                <input
+                  type="text"
+                  placeholder="Updated Test Name"
+                  value={testNames[test.id] || ""}
+                  onChange={(e) => {
+                    const updatedTestNames = { ...testNames };
+                    updatedTestNames[test.id] = e.target.value;
+                    setTestNames(updatedTestNames);
+                  }}
+                />
+                <button onClick={() => updateTestItemName(test.id)}>
+                  Update Name
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to={`/projects/${projectID}/tests/${test.id}`}>
+                  {test.name}
+                </Link>
+                <button onClick={() => deleteTestItem(test.id)}>Delete</button>
+                <button onClick={() => startEditingTest(test.id)}>Edit</button>
+              </>
+            )}
           </li>
         ))}
       </ul>
@@ -152,7 +146,7 @@ function TestsList() {
           setTestNames({ ...testNames, newTest: e.target.value });
         }}
       />
-      <button onClick={createTest}>Add Test</button>
+      <button onClick={createNewTest}>Add Test</button>
     </div>
   );
 }

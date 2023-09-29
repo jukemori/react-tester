@@ -1,119 +1,105 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  fetchProjects,
+  deleteProject,
+  updateProjectName,
+  createProject,
+} from "../api/projectApi"; // Import the API functions
 
 function ProjectList() {
   const [projects, setProjects] = useState([]);
   const [projectNames, setProjectNames] = useState({});
   const [authenticated, setAuthenticated] = useState(true);
+  const [editMode, setEditMode] = useState({});
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    if (!token) {
-      setAuthenticated(false);
-      navigate("/");
-    } else {
-      setAuthenticated(true);
-      axios
-        .get("http://localhost:8000/api/projects/", {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        })
-        .then((response) => {
-          setProjects(response.data);
-          // Initialize projectNames state with project names
+    const fetchData = async () => {
+      try {
+        if (!token) {
+          setAuthenticated(false);
+          navigate("/");
+        } else {
+          setAuthenticated(true);
+          const response = await fetchProjects(token);
+          setProjects(response);
           const initialProjectNames = {};
-          response.data.forEach((project) => {
+          response.forEach((project) => {
             initialProjectNames[project.id] = project.name;
           });
           setProjectNames(initialProjectNames);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
   }, [navigate, token]);
 
-  const deleteProject = (projectId) => {
-    axios
-      .delete(`http://localhost:8000/api/projects/${projectId}`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-      .then(() => {
-        setProjects((prevProjects) =>
-          prevProjects.filter((project) => project.id !== projectId)
-        );
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const handleLogout = () => {
+    // Clear user data and token from localStorage
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    setAuthenticated(false);
+    navigate("/"); // Redirect to the login page or another appropriate route
   };
 
-  const updateProjectName = (projectId) => {
-    const projectNameToUpdate = projectNames[projectId];
-
-    axios
-      .put(
-        `http://localhost:8000/api/projects/${projectId}`,
-        {
-          name: projectNameToUpdate,
-        },
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      )
-      .then((response) => {
-        setProjects((prevProjects) =>
-          prevProjects.map((project) =>
-            project.id === projectId
-              ? { ...project, name: projectNameToUpdate }
-              : project
-          )
-        );
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const startEditingProject = (projectId) => {
+    setEditMode((prevEditMode) => ({ ...prevEditMode, [projectId]: true }));
   };
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const updateProject = async (projectId) => {
+    try {
+      const newName = projectNames[projectId];
+      const updatedProject = await updateProjectName(projectId, newName, token);
+      setProjects((prevProjects) =>
+        prevProjects.map((project) =>
+          project.id === projectId
+            ? { ...project, name: updatedProject.name }
+            : project
+        )
+      );
+      setEditMode((prevEditMode) => ({
+        ...prevEditMode,
+        [projectId]: false,
+      }));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteProjectById = async (projectId) => {
+    try {
+      await deleteProject(projectId, token);
+      setProjects((prevProjects) =>
+        prevProjects.filter((project) => project.id !== projectId)
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const user = localStorage.getItem("user");
   const userId = user.id;
 
-  const handleLogout = () => {
-    // ...
-  };
-
-  const createProject = () => {
-    axios
-      .post(
-        "http://localhost:8000/api/projects",
-        {
-          name: projectNames.newProject, // Use the appropriate key for the input field
-          user_id: userId,
-        },
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      )
-      .then((response) => {
-        setProjects((prevProjects) => [...prevProjects, response.data]);
-        // Clear the input field by resetting its value
-        setProjectNames((prevProjectNames) => ({
-          ...prevProjectNames,
-          newProject: "",
-        }));
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const createNewProject = async () => {
+    try {
+      const newProjectData = {
+        name: projectNames.newProject,
+        user_id: userId, // Make sure userId is defined
+      };
+      const createdProject = await createProject(newProjectData, token);
+      setProjects((prevProjects) => [...prevProjects, createdProject]);
+      setProjectNames((prevProjectNames) => ({
+        ...prevProjectNames,
+        newProject: "",
+      }));
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -129,21 +115,37 @@ function ProjectList() {
       <ul>
         {projects.map((project) => (
           <li key={project.id}>
-            <Link to={`/projects/${project.id}`}>{project.name}</Link>
-            <input
-              type="text"
-              placeholder="New Project Name"
-              value={projectNames[project.id] || ""}
-              onChange={(e) => {
-                const updatedProjectNames = { ...projectNames };
-                updatedProjectNames[project.id] = e.target.value;
-                setProjectNames(updatedProjectNames);
-              }}
-            />
-            <button onClick={() => updateProjectName(project.id)}>
-              Update Name
-            </button>
-            <button onClick={() => deleteProject(project.id)}>Delete</button>
+            {editMode[project.id] ? (
+              <>
+                <input
+                  type="text"
+                  placeholder="Updated Project Name"
+                  value={projectNames[project.id] || ""}
+                  onChange={(e) => {
+                    const updatedProjectNames = { ...projectNames };
+                    updatedProjectNames[project.id] = e.target.value;
+                    setProjectNames(updatedProjectNames);
+                  }}
+                />
+                <button onClick={() => updateProject(project.id)}>
+                  Update Name
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to={`/projects/${project.id}`}>{project.name}</Link>
+                {authenticated && (
+                  <>
+                    <button onClick={() => startEditingProject(project.id)}>
+                      Edit
+                    </button>
+                    <button onClick={() => deleteProjectById(project.id)}>
+                      Delete
+                    </button>
+                  </>
+                )}
+              </>
+            )}
           </li>
         ))}
       </ul>
@@ -155,7 +157,7 @@ function ProjectList() {
           setProjectNames({ ...projectNames, newProject: e.target.value });
         }}
       />
-      <button onClick={createProject}>Create Project</button>
+      <button onClick={createNewProject}>Create Project</button>
     </div>
   );
 }
