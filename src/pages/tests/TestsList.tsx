@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ChangeEvent } from "react";
+import { useEffect, useState, ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
 import {
   fetchProject,
@@ -25,7 +25,7 @@ function TestsList() {
   const [newTest, setNewTest] = useState<string>("");
 
   useEffect(() => {
-    if (!projectID) {
+    if (!projectID || !token) {
       return; // Handle the case where projectID is undefined
     }
 
@@ -38,7 +38,9 @@ function TestsList() {
       }
     };
 
-    fetchData();
+    if (token) {
+      fetchData();
+    }
   }, [projectID, token]);
 
   useEffect(() => {
@@ -48,19 +50,23 @@ function TestsList() {
 
     const fetchTestsData = async () => {
       try {
-        const testsResponse: Test[] = await fetchTests(+projectID, token);
-        setTests(testsResponse);
-        const initialTestNames: { [key: number]: string } = {};
-        testsResponse.forEach((test) => {
-          initialTestNames[test.id] = test.name;
-        });
-        setTestNames(initialTestNames);
+        if (token) {
+          const testsResponse: Test[] = await fetchTests(+projectID, token);
+          setTests(testsResponse);
+          const initialTestNames: { [key: number]: string } = {};
+          testsResponse.forEach((test) => {
+            initialTestNames[test.id] = test.name;
+          });
+          setTestNames(initialTestNames);
+        }
       } catch (error) {
         console.error(error);
       }
     };
 
-    fetchTestsData();
+    if (token) {
+      fetchTestsData();
+    }
   }, [projectID, token]);
 
   const createNewTest = async () => {
@@ -69,9 +75,11 @@ function TestsList() {
         return; // Handle the case where projectID is undefined
       }
 
-      const response = await createTest(+projectID, newTest, token);
-      setTests((prevTests) => [...prevTests, response]);
-      setNewTest("");
+      if (token) {
+        const response = await createTest(+projectID, newTest, token);
+        setTests((prevTests) => [...prevTests, response]);
+        setNewTest("");
+      }
     } catch (error) {
       console.error(error);
     }
@@ -83,8 +91,10 @@ function TestsList() {
         return; // Handle the case where projectID is undefined
       }
 
-      await deleteTest(+projectID, testId, token);
-      setTests((prevTests) => prevTests.filter((test) => test.id !== testId));
+      if (token) {
+        await deleteTest(+projectID, testId, token);
+        setTests((prevTests) => prevTests.filter((test) => test.id !== testId));
+      }
     } catch (error) {
       console.error(error);
     }
@@ -96,13 +106,20 @@ function TestsList() {
         return; // Handle the case where projectID is undefined
       }
 
-      const response = await updateTestName(+projectID, testId, newName, token);
-      setTests((prevTests) =>
-        prevTests.map((test) =>
-          test.id === testId ? { ...test, name: newName } : test
-        )
-      );
-      setEditingTestId(null);
+      if (token) {
+        const response = await updateTestName(
+          +projectID,
+          testId,
+          newName,
+          token
+        );
+        setTests((prevTests) =>
+          prevTests.map((test) =>
+            test.id === testId ? { ...test, name: newName } : test
+          )
+        );
+        setEditingTestId(null);
+      }
     } catch (error) {
       console.error(error);
     }

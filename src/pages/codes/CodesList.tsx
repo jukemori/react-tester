@@ -1,6 +1,4 @@
-// CodesList.js
-
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, ChangeEvent } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import {
@@ -12,22 +10,49 @@ import {
 } from "../../api/codeApi"; // Import the API functions from your separate file
 import CodeItem from "./CodeItem"; // Import the CodeItem component
 
+interface Test {
+  id: number;
+  name: string;
+  // Add other properties of the Test object if necessary
+}
+
+interface Code {
+  id: number;
+  code_body: string;
+  // Add other properties of the Code object if necessary
+}
+
 function CodesList() {
-  const { projectID, testID } = useParams();
-  const token = localStorage.getItem("token");
-  const [test, setTest] = useState({});
-  const [codes, setCodes] = useState([]);
-  const [editingCodeId, setEditingCodeId] = useState(null);
-  const [codeName, setCodeName] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
+  const { projectID, testID } = useParams<{
+    projectID: string;
+    testID: string;
+  }>();
+  const projectIdNumber = parseInt(projectID ?? "0", 10); // Convert to number with default value of 0
+  const testIdNumber = parseInt(testID ?? "0", 10); // Convert to number with default value of 0
+  const token = localStorage.getItem("token") || "";
+  const [test, setTest] = useState<Test>({ id: 0, name: "" });
+  const [codes, setCodes] = useState<Code[]>([]);
+  const [editingCodeId, setEditingCodeId] = useState<number | null>(null);
+  const [codeName, setCodeName] = useState<string>("");
+  const [suggestions, setSuggestions] = useState<
+    { id: string; suggestion_text: string }[]
+  >([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const testResponse = await fetchTest(projectID, testID, token);
+        const testResponse = await fetchTest(
+          projectIdNumber,
+          testIdNumber,
+          token
+        );
         setTest(testResponse);
 
-        const codesResponse = await fetchCodes(projectID, testID, token);
+        const codesResponse = await fetchCodes(
+          projectIdNumber,
+          testIdNumber,
+          token
+        );
         setCodes(codesResponse);
       } catch (error) {
         console.error(error);
@@ -35,11 +60,16 @@ function CodesList() {
     };
 
     fetchData();
-  }, [projectID, testID, token]);
+  }, [projectIdNumber, testIdNumber, token]);
 
   const createNewCode = async () => {
     try {
-      const response = await createCode(projectID, testID, codeName, token);
+      const response = await createCode(
+        projectIdNumber,
+        testIdNumber,
+        codeName,
+        token
+      );
       setCodes((prevCodes) => [...prevCodes, response]);
       setCodeName("");
     } catch (error) {
@@ -47,9 +77,15 @@ function CodesList() {
     }
   };
 
-  const updateCodeItem = async (codeId, updatedCodeBody) => {
+  const updateCodeItem = async (codeId: number, updatedCodeBody: string) => {
     try {
-      await updateCode(projectID, testID, codeId, updatedCodeBody, token);
+      await updateCode(
+        projectIdNumber,
+        testIdNumber,
+        codeId,
+        updatedCodeBody,
+        token
+      );
       setCodes((prevCodes) =>
         prevCodes.map((code) =>
           code.id === codeId ? { ...code, code_body: updatedCodeBody } : code
@@ -63,20 +99,20 @@ function CodesList() {
     }
   };
 
-  const deleteCodeItem = async (codeId) => {
+  const deleteCodeItem = async (codeId: number) => {
     try {
-      await deleteCode(projectID, testID, codeId, token);
+      await deleteCode(projectIdNumber, testIdNumber, codeId, token);
       setCodes((prevCodes) => prevCodes.filter((code) => code.id !== codeId));
     } catch (error) {
       console.error(error);
     }
   };
 
-  const startEditingCode = (codeId) => {
+  const startEditingCode = (codeId: number) => {
     setEditingCodeId(codeId);
   };
 
-  const handleInputChange = (event) => {
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const inputValue = event.target.value;
     setCodeName(inputValue);
 
@@ -98,10 +134,11 @@ function CodesList() {
     axios
       .get(`http://localhost:8000/api/suggestions?query=${lastWord}`)
       .then((response) => {
-        const matchingSuggestions = response.data.filter((suggestion) =>
-          suggestion.suggestion_text
-            .toLowerCase()
-            .startsWith(lastWord.toLowerCase())
+        const matchingSuggestions = response.data.filter(
+          (suggestion: { id: string; suggestion_text: string }) =>
+            suggestion.suggestion_text
+              .toLowerCase()
+              .startsWith(lastWord.toLowerCase())
         );
 
         if (matchingSuggestions.length > 0) {
@@ -117,7 +154,10 @@ function CodesList() {
       });
   };
 
-  const selectSuggestion = (suggestion) => {
+  const selectSuggestion = (suggestion: {
+    id: string;
+    suggestion_text: string;
+  }) => {
     setCodeName((prevCodeName) => {
       const words = prevCodeName.split(" ");
       words[words.length - 1] = suggestion.suggestion_text;

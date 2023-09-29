@@ -1,11 +1,18 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
 const API_BASE_URL = "http://localhost:8000/api/projects/";
 
+// Define the Project interface
+interface Project {
+  id: number;
+  name: string;
+  // Add other properties as needed
+}
+
 // Fetch projects
-export async function fetchProjects(token) {
+export async function fetchProjects(token: string): Promise<Project[]> {
   try {
-    const response = await axios.get(API_BASE_URL, {
+    const response: AxiosResponse<Project[]> = await axios.get(API_BASE_URL, {
       headers: {
         Authorization: "Bearer " + token,
       },
@@ -17,7 +24,10 @@ export async function fetchProjects(token) {
 }
 
 // Delete project
-export async function deleteProject(projectId, token) {
+export async function deleteProject(
+  projectId: number,
+  token: string
+): Promise<void> {
   try {
     await axios.delete(`${API_BASE_URL}${projectId}`, {
       headers: {
@@ -30,9 +40,13 @@ export async function deleteProject(projectId, token) {
 }
 
 // Update project name
-export async function updateProjectName(projectId, newName, token) {
+export async function updateProjectName(
+  projectId: number,
+  newName: string,
+  token: string
+): Promise<Project> {
   try {
-    const response = await axios.put(
+    const response: AxiosResponse<Project> = await axios.put(
       `${API_BASE_URL}${projectId}`,
       {
         name: newName,
@@ -50,13 +64,20 @@ export async function updateProjectName(projectId, newName, token) {
 }
 
 // Create project
-export async function createProject(newProjectData, token) {
+export async function createProject(
+  newProjectData: { name: string },
+  token: string
+): Promise<Project> {
   try {
-    const response = await axios.post(API_BASE_URL, newProjectData, {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    });
+    const response: AxiosResponse<Project> = await axios.post(
+      API_BASE_URL,
+      newProjectData,
+      {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     throw error;

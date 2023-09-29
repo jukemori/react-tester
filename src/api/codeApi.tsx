@@ -1,9 +1,23 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
 const API_BASE_URL = "http://localhost:8000/api/projects/";
 
-export const fetchTest = async (projectID, testID, token) => {
-  const response = await axios.get(
+interface Code {
+  id: number;
+  code_body: string;
+}
+
+interface Test {
+  id: number;
+  name: string;
+}
+
+export const fetchTest = async (
+  projectID: number,
+  testID: number,
+  token: string
+): Promise<Test> => {
+  const response: AxiosResponse<Test> = await axios.get(
     `${API_BASE_URL}${projectID}/tests/${testID}`,
     {
       headers: {
@@ -14,8 +28,12 @@ export const fetchTest = async (projectID, testID, token) => {
   return response.data;
 };
 
-export const fetchCodes = async (projectID, testID, token) => {
-  const response = await axios.get(
+export const fetchCodes = async (
+  projectID: number,
+  testID: number,
+  token: string
+): Promise<Code[]> => {
+  const response: AxiosResponse<Code[]> = await axios.get(
     `${API_BASE_URL}${projectID}/tests/${testID}/codes`,
     {
       headers: {
@@ -26,8 +44,13 @@ export const fetchCodes = async (projectID, testID, token) => {
   return response.data;
 };
 
-export const createCode = async (projectID, testID, codeName, token) => {
-  const response = await axios.post(
+export const createCode = async (
+  projectID: number,
+  testID: number,
+  codeName: string,
+  token: string
+): Promise<Code> => {
+  const response: AxiosResponse<Code> = await axios.post(
     `${API_BASE_URL}${projectID}/tests/${testID}/codes`,
     {
       code_body: codeName,
@@ -42,12 +65,12 @@ export const createCode = async (projectID, testID, codeName, token) => {
 };
 
 export const updateCode = async (
-  projectID,
-  testID,
-  codeID,
-  updatedCodeBody,
-  token
-) => {
+  projectID: number,
+  testID: number,
+  codeID: number,
+  updatedCodeBody: string,
+  token: string
+): Promise<void> => {
   await axios.put(
     `${API_BASE_URL}${projectID}/tests/${testID}/codes/${codeID}`,
     {
@@ -61,7 +84,12 @@ export const updateCode = async (
   );
 };
 
-export const deleteCode = async (projectID, testID, codeID, token) => {
+export const deleteCode = async (
+  projectID: number,
+  testID: number,
+  codeID: number,
+  token: string
+): Promise<void> => {
   await axios.delete(
     `${API_BASE_URL}${projectID}/tests/${testID}/codes/${codeID}`,
     {

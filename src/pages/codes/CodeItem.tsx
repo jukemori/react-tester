@@ -1,9 +1,27 @@
-// CodeItem.js
+import { useState, ChangeEvent } from "react";
 
-import React, { useState } from "react";
+interface CodeItemProps {
+  code: { code_body: string };
+  isEditing: boolean;
+  onUpdate: (updatedCodeBody: string) => void;
+  onDelete: () => void;
+  onEdit: () => void;
+}
 
-function CodeItem({ code, isEditing, onUpdate, onDelete, onEdit }) {
-  const [updatedCodeBody, setUpdatedCodeBody] = useState(code.code_body);
+function CodeItem({
+  code,
+  isEditing,
+  onUpdate,
+  onDelete,
+  onEdit,
+}: CodeItemProps) {
+  const [updatedCodeBody, setUpdatedCodeBody] = useState<string>(
+    code.code_body
+  );
+
+  const handleCodeBodyChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setUpdatedCodeBody(e.target.value);
+  };
 
   return (
     <li>
@@ -13,7 +31,7 @@ function CodeItem({ code, isEditing, onUpdate, onDelete, onEdit }) {
             type="text"
             placeholder="Updated Code"
             value={updatedCodeBody}
-            onChange={(e) => setUpdatedCodeBody(e.target.value)}
+            onChange={handleCodeBodyChange}
           />
           <button onClick={() => onUpdate(updatedCodeBody)}>Update</button>
         </>

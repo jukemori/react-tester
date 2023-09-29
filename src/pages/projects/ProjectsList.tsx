@@ -22,7 +22,7 @@ function ProjectList() {
   const [authenticated, setAuthenticated] = useState(true);
   const [editMode, setEditMode] = useState<{ [key: number]: boolean }>({});
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token: string = localStorage.getItem("token") || "";
 
   useEffect(() => {
     const fetchData = async () => {
