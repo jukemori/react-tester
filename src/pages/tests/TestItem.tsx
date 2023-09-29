@@ -1,17 +1,6 @@
 import React, { useState, ChangeEvent } from "react";
 import { Link } from "react-router-dom";
 
-// Define the props interface
-interface TestItemProps {
-  test: { id: number; name: string };
-  isEditing: boolean;
-  onEdit: (testId: number) => void;
-  onUpdate: (testId: number, newName: string) => void;
-  onDelete: (testId: number) => void;
-  projectID: number;
-  onNameChange: (testId: number, newName: string) => void;
-}
-
 const TestItem: React.FC<TestItemProps> = ({
   test,
   isEditing,
