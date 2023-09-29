@@ -1,5 +1,19 @@
 import { Link } from "react-router-dom";
 
+interface ProjectItemProps {
+  project: {
+    id: number;
+    name: string;
+  };
+  isEditing: boolean;
+  projectNames: { [key: number]: string };
+  onEdit: (projectId: number) => void;
+  onUpdate: (projectId: number) => void;
+  onDelete: (projectId: number) => void;
+  onNameChange: (projectId: number, newName: string) => void;
+  authenticated: boolean; // Receive the authenticated prop
+}
+
 function ProjectItem({
   project,
   isEditing,
@@ -8,11 +22,11 @@ function ProjectItem({
   onUpdate,
   onDelete,
   onNameChange,
-  authenticated, // Receive the authenticated prop
-}) {
+  authenticated,
+}: ProjectItemProps) {
   return (
     <li key={project.id}>
-      {authenticated && isEditing ? ( // Use the authenticated prop here
+      {authenticated && isEditing ? (
         <>
           <input
             type="text"

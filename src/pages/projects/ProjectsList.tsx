@@ -5,14 +5,22 @@ import {
   deleteProject,
   updateProjectName,
   createProject,
-} from "../../api/projectApi"; // Import the API functions
-import ProjectItem from "./ProjectItem"; // Import the ProjectItem component
+} from "../../api/projectApi";
+import ProjectItem from "./ProjectItem";
+
+interface Project {
+  id: number;
+  name: string;
+}
 
 function ProjectList() {
-  const [projects, setProjects] = useState([]);
-  const [projectNames, setProjectNames] = useState({});
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [projectNames, setProjectNames] = useState<{ [key: number]: string }>(
+    {}
+  );
+  const [newProject, setNewProject] = useState<string>("");
   const [authenticated, setAuthenticated] = useState(true);
-  const [editMode, setEditMode] = useState({});
+  const [editMode, setEditMode] = useState<{ [key: number]: boolean }>({});
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
@@ -24,9 +32,9 @@ function ProjectList() {
           navigate("/");
         } else {
           setAuthenticated(true);
-          const response = await fetchProjects(token);
+          const response: Project[] = await fetchProjects(token); // Specify the type of response
           setProjects(response);
-          const initialProjectNames = {};
+          const initialProjectNames: { [key: number]: string } = {};
           response.forEach((project) => {
             initialProjectNames[project.id] = project.name;
           });
@@ -41,18 +49,17 @@ function ProjectList() {
   }, [navigate, token]);
 
   const handleLogout = () => {
-    // Clear user data and token from localStorage
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setAuthenticated(false);
-    navigate("/"); // Redirect to the login page or another appropriate route
+    navigate("/");
   };
 
-  const startEditingProject = (projectId) => {
+  const startEditingProject = (projectId: number) => {
     setEditMode((prevEditMode) => ({ ...prevEditMode, [projectId]: true }));
   };
 
-  const updateProject = async (projectId) => {
+  const updateProject = async (projectId: number) => {
     try {
       const newName = projectNames[projectId];
       const updatedProject = await updateProjectName(projectId, newName, token);
@@ -72,7 +79,7 @@ function ProjectList() {
     }
   };
 
-  const deleteProjectById = async (projectId) => {
+  const deleteProjectById = async (projectId: number) => {
     try {
       await deleteProject(projectId, token);
       setProjects((prevProjects) =>
@@ -84,26 +91,23 @@ function ProjectList() {
   };
 
   const user = localStorage.getItem("user");
-  const userId = user.id;
+  const userId = user ? JSON.parse(user).id : null;
 
   const createNewProject = async () => {
     try {
       const newProjectData = {
-        name: projectNames.newProject,
-        user_id: userId, // Make sure userId is defined
+        name: newProject, // Use the newProject state here
+        user_id: userId,
       };
       const createdProject = await createProject(newProjectData, token);
       setProjects((prevProjects) => [...prevProjects, createdProject]);
-      setProjectNames((prevProjectNames) => ({
-        ...prevProjectNames,
-        newProject: "",
-      }));
+      setNewProject(""); // Reset newProject to an empty string
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleProjectNameChange = (projectId, newName) => {
+  const handleProjectNameChange = (projectId: number, newName: string) => {
     setProjectNames((prevProjectNames) => ({
       ...prevProjectNames,
       [projectId]: newName,
@@ -125,8 +129,8 @@ function ProjectList() {
           <ProjectItem
             key={project.id}
             project={project}
-            authenticated={authenticated} // Pass the authenticated prop here
-            isEditing={editMode[project.id]}
+            authenticated={authenticated}
+            isEditing={!!editMode[project.id]}
             projectNames={projectNames}
             onEdit={startEditingProject}
             onUpdate={updateProject}
@@ -138,9 +142,9 @@ function ProjectList() {
       <input
         type="text"
         placeholder="Project Name"
-        value={projectNames.newProject || ""}
+        value={newProject}
         onChange={(e) => {
-          setProjectNames({ ...projectNames, newProject: e.target.value });
+          setNewProject(e.target.value);
         }}
       />
       <button onClick={createNewProject}>Create Project</button>
