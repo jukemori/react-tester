@@ -10,18 +10,6 @@ import {
 } from "../../api/codeApi"; // Import the API functions from your separate file
 import CodeItem from "./CodeItem"; // Import the CodeItem component
 
-interface Test {
-  id: number;
-  name: string;
-  // Add other properties of the Test object if necessary
-}
-
-interface Code {
-  id: number;
-  code_body: string;
-  // Add other properties of the Code object if necessary
-}
-
 function CodesList() {
   const { projectID, testID } = useParams<{
     projectID: string;

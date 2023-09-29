@@ -2,13 +2,6 @@ import axios, { AxiosResponse } from "axios";
 
 const API_BASE_URL = "http://localhost:8000/api/projects/";
 
-// Define the Project interface
-interface Project {
-  id: number;
-  name: string;
-  // Add other properties as needed
-}
-
 // Fetch projects
 export async function fetchProjects(token: string): Promise<Project[]> {
   try {

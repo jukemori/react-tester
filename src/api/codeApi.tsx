@@ -2,16 +2,6 @@ import axios, { AxiosResponse } from "axios";
 
 const API_BASE_URL = "http://localhost:8000/api/projects/";
 
-interface Code {
-  id: number;
-  code_body: string;
-}
-
-interface Test {
-  id: number;
-  name: string;
-}
-
 export const fetchTest = async (
   projectID: number,
   testID: number,

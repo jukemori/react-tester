@@ -9,11 +9,6 @@ import {
 } from "../../api/testApi";
 import TestItem from "./TestItem";
 
-interface Test {
-  id: number;
-  name: string;
-}
-
 function TestsList() {
   const { projectID } = useParams<{ projectID?: string }>();
   const token = localStorage.getItem("token");

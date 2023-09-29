@@ -1,19 +1,5 @@
 import { Link } from "react-router-dom";
 
-interface ProjectItemProps {
-  project: {
-    id: number;
-    name: string;
-  };
-  isEditing: boolean;
-  projectNames: { [key: number]: string };
-  onEdit: (projectId: number) => void;
-  onUpdate: (projectId: number) => void;
-  onDelete: (projectId: number) => void;
-  onNameChange: (projectId: number, newName: string) => void;
-  authenticated: boolean; // Receive the authenticated prop
-}
-
 function ProjectItem({
   project,
   isEditing,

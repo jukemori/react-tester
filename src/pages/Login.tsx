@@ -2,23 +2,13 @@ import { useState, ChangeEvent, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import axios, { AxiosResponse } from "axios";
 
-interface FormData {
+interface LogInFormData {
   email: string;
   password: string;
 }
 
-interface UserData {
-  id: number;
-  name: string;
-  email: string;
-  email_verified_at: string | null;
-  created_at: string;
-  updated_at: string;
-  // Add other properties if necessary
-}
-
 const Login = () => {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<LogInFormData>({
     email: "",
     password: "",
   });

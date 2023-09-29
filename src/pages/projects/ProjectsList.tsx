@@ -8,11 +8,6 @@ import {
 } from "../../api/projectApi";
 import ProjectItem from "./ProjectItem";
 
-interface Project {
-  id: number;
-  name: string;
-}
-
 function ProjectList() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectNames, setProjectNames] = useState<{ [key: number]: string }>(

@@ -1,13 +1,5 @@
 import { useState, ChangeEvent } from "react";
 
-interface CodeItemProps {
-  code: { code_body: string };
-  isEditing: boolean;
-  onUpdate: (updatedCodeBody: string) => void;
-  onDelete: () => void;
-  onEdit: () => void;
-}
-
 function CodeItem({
   code,
   isEditing,
