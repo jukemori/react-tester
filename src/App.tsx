@@ -1,9 +1,9 @@
 import { Routes, Route } from "react-router-dom";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
-import ProjectsList from "./pages/ProjectsList";
-import TestsList from "./pages/TestsList";
-import CodesList from "./pages/CodesList";
+import ProjectsList from "./pages/projects/ProjectsList";
+import TestsList from "./pages/tests/TestsList";
+import CodesList from "./pages/codes/CodesList";
 
 function App() {
   return (

@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+// CodesList.js
+
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import {
@@ -7,16 +9,16 @@ import {
   createCode,
   updateCode,
   deleteCode,
-} from "../api/codeApi"; // Import the API functions from your separate file
+} from "../../api/codeApi"; // Import the API functions from your separate file
+import CodeItem from "./CodeItem"; // Import the CodeItem component
 
 function CodesList() {
-  const [test, setTest] = useState({});
-  const [codeName, setCodeName] = useState("");
   const { projectID, testID } = useParams();
   const token = localStorage.getItem("token");
+  const [test, setTest] = useState({});
   const [codes, setCodes] = useState([]);
   const [editingCodeId, setEditingCodeId] = useState(null);
-  const [updatedCodeBody, setUpdatedCodeBody] = useState("");
+  const [codeName, setCodeName] = useState("");
   const [suggestions, setSuggestions] = useState([]);
 
   useEffect(() => {
@@ -45,7 +47,7 @@ function CodesList() {
     }
   };
 
-  const updateCodeItem = async (codeId) => {
+  const updateCodeItem = async (codeId, updatedCodeBody) => {
     try {
       await updateCode(projectID, testID, codeId, updatedCodeBody, token);
       setCodes((prevCodes) =>
@@ -56,7 +58,6 @@ function CodesList() {
 
       // Reset editing state
       setEditingCodeId(null);
-      setUpdatedCodeBody("");
     } catch (error) {
       console.error(error);
     }
@@ -73,10 +74,6 @@ function CodesList() {
 
   const startEditingCode = (codeId) => {
     setEditingCodeId(codeId);
-
-    // Initialize the updated code body with the current code body
-    const codeToEdit = codes.find((code) => code.id === codeId);
-    setUpdatedCodeBody(codeToEdit.code_body);
   };
 
   const handleInputChange = (event) => {
@@ -134,25 +131,16 @@ function CodesList() {
       <h1>{test.name}</h1>
       <ul>
         {codes.map((code) => (
-          <li key={code.id}>
-            {editingCodeId === code.id ? (
-              <>
-                <input
-                  type="text"
-                  placeholder="Updated Code"
-                  value={updatedCodeBody}
-                  onChange={(e) => setUpdatedCodeBody(e.target.value)}
-                />
-                <button onClick={() => updateCodeItem(code.id)}>Update</button>
-              </>
-            ) : (
-              <>
-                {code.code_body}
-                <button onClick={() => deleteCodeItem(code.id)}>Delete</button>
-                <button onClick={() => startEditingCode(code.id)}>Edit</button>
-              </>
-            )}
-          </li>
+          <CodeItem
+            key={code.id}
+            code={code}
+            isEditing={editingCodeId === code.id}
+            onUpdate={(updatedCodeBody) =>
+              updateCodeItem(code.id, updatedCodeBody)
+            }
+            onDelete={() => deleteCodeItem(code.id)}
+            onEdit={() => startEditingCode(code.id)}
+          />
         ))}
       </ul>
       <input

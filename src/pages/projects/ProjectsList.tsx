@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   fetchProjects,
   deleteProject,
   updateProjectName,
   createProject,
-} from "../api/projectApi"; // Import the API functions
+} from "../../api/projectApi"; // Import the API functions
+import ProjectItem from "./ProjectItem"; // Import the ProjectItem component
 
 function ProjectList() {
   const [projects, setProjects] = useState([]);
@@ -102,6 +103,13 @@ function ProjectList() {
     }
   };
 
+  const handleProjectNameChange = (projectId, newName) => {
+    setProjectNames((prevProjectNames) => ({
+      ...prevProjectNames,
+      [projectId]: newName,
+    }));
+  };
+
   return (
     <div>
       <h1>Projects</h1>
@@ -114,39 +122,17 @@ function ProjectList() {
       )}
       <ul>
         {projects.map((project) => (
-          <li key={project.id}>
-            {editMode[project.id] ? (
-              <>
-                <input
-                  type="text"
-                  placeholder="Updated Project Name"
-                  value={projectNames[project.id] || ""}
-                  onChange={(e) => {
-                    const updatedProjectNames = { ...projectNames };
-                    updatedProjectNames[project.id] = e.target.value;
-                    setProjectNames(updatedProjectNames);
-                  }}
-                />
-                <button onClick={() => updateProject(project.id)}>
-                  Update Name
-                </button>
-              </>
-            ) : (
-              <>
-                <Link to={`/projects/${project.id}`}>{project.name}</Link>
-                {authenticated && (
-                  <>
-                    <button onClick={() => startEditingProject(project.id)}>
-                      Edit
-                    </button>
-                    <button onClick={() => deleteProjectById(project.id)}>
-                      Delete
-                    </button>
-                  </>
-                )}
-              </>
-            )}
-          </li>
+          <ProjectItem
+            key={project.id}
+            project={project}
+            authenticated={authenticated} // Pass the authenticated prop here
+            isEditing={editMode[project.id]}
+            projectNames={projectNames}
+            onEdit={startEditingProject}
+            onUpdate={updateProject}
+            onDelete={deleteProjectById}
+            onNameChange={handleProjectNameChange}
+          />
         ))}
       </ul>
       <input
