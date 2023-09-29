@@ -1,30 +1,46 @@
-import { useState } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
+
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
+}
+
+interface UserData {
+  id: number;
+  name: string;
+  email: string;
+  email_verified_at: string | null;
+  created_at: string;
+  updated_at: string;
+  // Add other properties if necessary
+}
 
 const Registration = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
     password: "",
   });
 
-  const [registered, setRegistered] = useState(false);
+  const [registered, setRegistered] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleRegister = async (e) => {
+  const handleRegister = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://localhost:8000/api/register",
-        formData
-      );
+      const response: AxiosResponse<{
+        user: UserData;
+        token: string;
+      }> = await axios.post("http://localhost:8000/api/register", formData);
 
       const user = response.data.user;
       const token = response.data.token;
@@ -53,18 +69,21 @@ const Registration = () => {
             name="name"
             placeholder="Name"
             onChange={handleChange}
+            value={formData.name}
           />
           <input
             type="email"
             name="email"
             placeholder="Email"
             onChange={handleChange}
+            value={formData.email}
           />
           <input
             type="password"
             name="password"
             placeholder="Password"
             onChange={handleChange}
+            value={formData.password}
           />
           <button type="submit">Register</button>
         </form>
