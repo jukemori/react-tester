@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   fetchProjects,
   deleteProject,
@@ -14,41 +13,31 @@ function ProjectList() {
     {}
   );
   const [newProject, setNewProject] = useState<string>("");
-  const [authenticated, setAuthenticated] = useState(true);
   const [editMode, setEditMode] = useState<{ [key: number]: boolean }>({});
-  const navigate = useNavigate();
   const token: string = localStorage.getItem("token") || "";
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         if (!token) {
-          setAuthenticated(false);
-          navigate("/");
-        } else {
-          setAuthenticated(true);
-          const response: Project[] = await fetchProjects(token); // Specify the type of response
-          setProjects(response);
-          const initialProjectNames: { [key: number]: string } = {};
-          response.forEach((project) => {
-            initialProjectNames[project.id] = project.name;
-          });
-          setProjectNames(initialProjectNames);
+          // Handle unauthenticated state as needed
+          return;
         }
+
+        const response: Project[] = await fetchProjects(token);
+        setProjects(response);
+        const initialProjectNames: { [key: number]: string } = {};
+        response.forEach((project) => {
+          initialProjectNames[project.id] = project.name;
+        });
+        setProjectNames(initialProjectNames);
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchData();
-  }, [navigate, token]);
-
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    setAuthenticated(false);
-    navigate("/");
-  };
+  }, [token]);
 
   const startEditingProject = (projectId: number) => {
     setEditMode((prevEditMode) => ({ ...prevEditMode, [projectId]: true }));
@@ -91,12 +80,12 @@ function ProjectList() {
   const createNewProject = async () => {
     try {
       const newProjectData = {
-        name: newProject, // Use the newProject state here
+        name: newProject,
         user_id: userId,
       };
       const createdProject = await createProject(newProjectData, token);
       setProjects((prevProjects) => [...prevProjects, createdProject]);
-      setNewProject(""); // Reset newProject to an empty string
+      setNewProject("");
     } catch (error) {
       console.error(error);
     }
@@ -112,19 +101,11 @@ function ProjectList() {
   return (
     <div>
       <h1>Projects</h1>
-      {authenticated ? (
-        <div>
-          <button onClick={handleLogout}>Logout</button>
-        </div>
-      ) : (
-        <p>Please log in to view projects.</p>
-      )}
       <ul>
         {projects.map((project) => (
           <ProjectItem
             key={project.id}
             project={project}
-            authenticated={authenticated}
             isEditing={!!editMode[project.id]}
             projectNames={projectNames}
             onEdit={startEditingProject}

@@ -8,11 +8,10 @@ function ProjectItem({
   onUpdate,
   onDelete,
   onNameChange,
-  authenticated,
 }: ProjectItemProps) {
   return (
     <li key={project.id}>
-      {authenticated && isEditing ? (
+      {isEditing ? (
         <>
           <input
             type="text"
@@ -25,12 +24,11 @@ function ProjectItem({
       ) : (
         <>
           <Link to={`/projects/${project.id}`}>{project.name}</Link>
-          {authenticated && (
-            <>
-              <button onClick={() => onEdit(project.id)}>Edit</button>
-              <button onClick={() => onDelete(project.id)}>Delete</button>
-            </>
-          )}
+
+          <>
+            <button onClick={() => onEdit(project.id)}>Edit</button>
+            <button onClick={() => onDelete(project.id)}>Delete</button>
+          </>
         </>
       )}
     </li>

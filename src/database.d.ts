@@ -23,7 +23,6 @@ interface ProjectItemProps {
   onUpdate: (projectId: number) => void;
   onDelete: (projectId: number) => void;
   onNameChange: (projectId: number, newName: string) => void;
-  authenticated: boolean; // Receive the authenticated prop
 }
 
 interface Test {
