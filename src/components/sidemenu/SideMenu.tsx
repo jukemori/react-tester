@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import SideMenuProjects from "./SideMenuProjects";
 import { fetchProjects } from "../../api/projectApi"; // Import the Project type from your API
-import userImage from "../../assets/gorilla.jpeg";
+import userImage from "../../assets/gorilla.jpg";
 import "./side-menu.css";
 
 function SideMenu() {
