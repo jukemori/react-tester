@@ -1,10 +1,10 @@
 import { Routes, Route } from "react-router-dom";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
-import ProjectsList from "./components/projects/ProjectsList";
-import TestsList from "./components/tests/TestsList";
-import CodesList from "./components/codes/CodesList";
-import SideMenu from "./components/sidebar/Sidebar";
+import Projects from "./pages/Projects";
+import Tests from "./pages/Tests";
+import Codes from "./pages/Codes";
+import SideMenu from "./components/sidemenu/SideMenu";
 import "./App.css";
 
 function App() {
@@ -13,13 +13,10 @@ function App() {
       <SideMenu />
       <Routes>
         <Route path="/register" element={<Register />} />
-        <Route path="/" element={<Login />} />
-        <Route path="/projects" element={<ProjectsList />} />
-        <Route path="/projects/:projectID" element={<TestsList />} />
-        <Route
-          path="/projects/:projectID/tests/:testID"
-          element={<CodesList />}
-        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/projects/:projectID" element={<Tests />} />
+        <Route path="/projects/:projectID/tests/:testID" element={<Codes />} />
       </Routes>
     </>
   );

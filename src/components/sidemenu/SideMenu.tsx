@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 import SideMenuProjects from "./SideMenuProjects";
 import { fetchProjects } from "../../api/projectApi"; // Import the Project type from your API
-import Header from "./Header"; // Import the Header component
+import userImage from "../../assets/gorilla.jpeg";
+import "./side-menu.css";
 
 function SideMenu() {
   const [projects, setProjects] = useState<Project[]>([]); // Specify the type as Project[]
@@ -17,7 +18,7 @@ function SideMenu() {
         const token = localStorage.getItem("token");
         if (!token) {
           setAuthenticated(false);
-          navigate("/");
+          navigate("/login");
         } else {
           setAuthenticated(true);
           const response: Project[] = await fetchProjects(token); // Specify the type as Project[]
@@ -40,21 +41,27 @@ function SideMenu() {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setAuthenticated(false);
-    navigate("/"); // Redirect the user to the login page
+    navigate("/login"); // Redirect the user to the login page
   };
 
   return (
     <div className="side-menu">
       {authenticated && (
-        <ul>
-          <li>
-            <Header username={username} onLogout={handleLogout} />
-          </li>
-          <li>
-            <Link to="/projects">Home</Link>
-          </li>
-          <SideMenuProjects projects={projects} />
-        </ul>
+        <>
+          <div className="logo"></div>
+          <ul>
+            <li></li>
+            <li>
+              <Link to="/projects">Home</Link>
+            </li>
+            <SideMenuProjects projects={projects} />
+          </ul>
+          <div className="user__info">
+            <img src={userImage} alt="" className="user__img" />
+            <p> {username}</p>
+            <button onClick={handleLogout}>Logout</button>
+          </div>
+        </>
       )}
     </div>
   );
