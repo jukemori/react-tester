@@ -19,7 +19,7 @@ function ProjectItem({
             value={projectNames[project.id] || ""}
             onChange={(e) => onNameChange(project.id, e.target.value)}
           />
-          <button onClick={() => onUpdate(project.id)}>Update Name</button>
+          <button onClick={() => onUpdate(project.id)}>Update</button>
         </>
       ) : (
         <>

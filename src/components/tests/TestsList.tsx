@@ -102,12 +102,7 @@ function TestsList() {
       }
 
       if (token) {
-        const response = await updateTestName(
-          +projectID,
-          testId,
-          newName,
-          token
-        );
+        await updateTestName(+projectID, testId, newName, token);
         setTests((prevTests) =>
           prevTests.map((test) =>
             test.id === testId ? { ...test, name: newName } : test

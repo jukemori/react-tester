@@ -100,7 +100,7 @@ function ProjectList() {
 
   return (
     <div>
-      <h1>Projects</h1>
+      <h1>Your Projects</h1>
       <ul>
         {projects.map((project) => (
           <ProjectItem

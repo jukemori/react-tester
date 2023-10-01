@@ -8,7 +8,7 @@ import "./side-menu.css";
 function SideMenu() {
   const [projects, setProjects] = useState<Project[]>([]); // Specify the type as Project[]
   const [authenticated, setAuthenticated] = useState<boolean>(false); // Specify the type as boolean
-  const [username, setUsername] = useState<string>(""); // Specify the type as string
+  const [user, setUser] = useState<UserData | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,8 +26,8 @@ function SideMenu() {
 
           // Replace this with your actual username retrieval logic
           const user = localStorage.getItem("user");
-          const fetchedUsername = user ? JSON.parse(user).name : null;
-          setUsername(fetchedUsername || ""); // Specify the type as string and provide a default value
+          const fetchedUser = user ? JSON.parse(user) : null;
+          setUser(fetchedUser || ""); // Specify the type as string and provide a default value
         }
       } catch (error) {
         console.error(error);
@@ -45,25 +45,35 @@ function SideMenu() {
   };
 
   return (
-    <div className="side-menu">
+    <>
       {authenticated && (
-        <>
-          <div className="logo"></div>
-          <ul>
-            <li></li>
-            <li>
-              <Link to="/projects">Home</Link>
-            </li>
-            <SideMenuProjects projects={projects} />
-          </ul>
-          <div className="user__info">
-            <img src={userImage} alt="" className="user__img" />
-            <p> {username}</p>
+        <div className="side-menu">
+          <div>
+            <div className="logo"></div>
+            <ul>
+              <li></li>
+              <li>
+                <Link to="/projects">Home</Link>
+              </li>
+              <SideMenuProjects projects={projects} />
+            </ul>
+          </div>
+
+          <div className="user__container">
+            <div className="user__info">
+              <img src={userImage} alt="" className="user__img" />
+              {user !== null && (
+                <div>
+                  <p>{user.name}</p>
+                  <p>{user.email}</p>
+                </div>
+              )}
+            </div>
             <button onClick={handleLogout}>Logout</button>
           </div>
-        </>
+        </div>
       )}
-    </div>
+    </>
   );
 }
 

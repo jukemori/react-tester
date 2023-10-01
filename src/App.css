@@ -141,6 +141,7 @@ img {
   max-width: 968px;
   margin-left: 250px;
   margin-right: auto;
+  padding: var(--mb-1-5);
 }
 
 .grid {
@@ -206,10 +207,6 @@ img {
 }
 
 @media screen and (max-width: 576px) {
-}
-
-/* For small devices */
-@media screen and (max-width: 350px) {
   :root {
     --big-font-size: 2.25rem;
   }
@@ -218,4 +215,8 @@ img {
     margin-left: var(--mb-1);
     margin-right: var(--mb-1);
   }
+}
+
+/* For small devices */
+@media screen and (max-width: 350px) {
 }
