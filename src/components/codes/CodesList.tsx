@@ -110,6 +110,37 @@ function CodesList() {
       return;
     }
 
+    // Check if the input contains a dot ('.') and a letter after it
+    if (/\.([a-zA-Z])/.test(inputValue)) {
+      const match = inputValue.match(/\.([a-zA-Z]+)/);
+      if (match) {
+        const lastWord = match[1];
+        // Fetch suggestions based on the letter after the dot
+        axios
+          .get(`http://localhost:8000/api/suggestions?query=${lastWord}`)
+          .then((response) => {
+            const matchingSuggestions = response.data.filter(
+              (suggestion: { id: string; suggestion_text: string }) =>
+                suggestion.suggestion_text
+                  .toLowerCase()
+                  .startsWith(lastWord.toLowerCase())
+            );
+
+            if (matchingSuggestions.length > 0) {
+              // Show the matching suggestions
+              setSuggestions(matchingSuggestions);
+            } else {
+              // Clear suggestions if no matches
+              setSuggestions([]);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+        return;
+      }
+    }
+
     const words = inputValue.split(" ");
     const lastWord = words[words.length - 1];
 
@@ -148,7 +179,18 @@ function CodesList() {
   }) => {
     setCodeName((prevCodeName) => {
       const words = prevCodeName.split(" ");
-      words[words.length - 1] = suggestion.suggestion_text;
+      const lastWord = words[words.length - 1];
+
+      if (lastWord.includes(".")) {
+        // If the last word contains a dot, replace only the last part (after the last dot)
+        const parts = lastWord.split(".");
+        parts[parts.length - 1] = suggestion.suggestion_text;
+        words[words.length - 1] = parts.join(".");
+      } else {
+        // Otherwise, replace the entire last word
+        words[words.length - 1] = suggestion.suggestion_text;
+      }
+
       return words.join(" ");
     });
     setSuggestions([]);
