@@ -12,21 +12,25 @@ const TestItem: React.FC<TestItemProps> = ({
   onIsSuccessfulChange,
 }) => {
   const [testName, setTestName] = useState(test.name);
-  const [isSuccessful, setIsSuccessful] = useState(test.is_successful);
+  const [pendingIsSuccessful, setPendingIsSuccessful] = useState(
+    test.is_successful
+  );
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTestName(e.target.value);
     onNameChange(test.id, e.target.value); // Notify parent component of name change
   };
 
-  const handleIsSuccessfulChange = () => {
-    const newIsSuccessful = !isSuccessful;
-    setIsSuccessful(newIsSuccessful);
-    onIsSuccessfulChange(test.id, newIsSuccessful); // Notify parent component of is_successful change
+  const toggleIsSuccessful = () => {
+    // Toggle the UI state only
+    const newIsSuccessful = !pendingIsSuccessful;
+    setPendingIsSuccessful(newIsSuccessful);
   };
 
   const handleUpdate = () => {
-    onUpdate(test.id, testName, isSuccessful);
+    // Update the actual data when the "Update" button is clicked
+    onIsSuccessfulChange(test.id, pendingIsSuccessful); // Notify parent component of is_successful change
+    onUpdate(test.id, testName, pendingIsSuccessful);
   };
 
   return (
@@ -40,24 +44,32 @@ const TestItem: React.FC<TestItemProps> = ({
             value={testName}
             onChange={handleNameChange}
           />
-          <label>
-            <input
-              type="checkbox"
-              checked={isSuccessful}
-              onChange={handleIsSuccessfulChange}
-            />
-            Successful
-          </label>
-          <button className="button__icon" onClick={handleUpdate}>
-            <i className="bx bxs-check-circle icon__check"></i>
+          <button
+            className={`button__toggle ${
+              pendingIsSuccessful ? "success-text" : "failed-text"
+            }`}
+            onClick={toggleIsSuccessful}
+          >
+            {pendingIsSuccessful ? "Successful" : "Failed"}
+          </button>
+          <button className="button__update" onClick={handleUpdate}>
+            Update
           </button>
         </div>
       ) : (
         <div className="item__card">
-          <Link to={`/projects/${projectID}/tests/${test.id}`}>
-            {test.name}
-          </Link>
-          <p>{test.is_successful ? "Success" : "Failed"}</p>
+          <div className="item__info">
+            <Link to={`/projects/${projectID}/tests/${test.id}`}>
+              {test.name}
+            </Link>
+            <p
+              className={`item__status ${
+                test.is_successful ? "success-text" : "failed-text"
+              }`}
+            >
+              {test.is_successful ? "Success" : "Failed"}
+            </p>
+          </div>
 
           <div className="item__buttons">
             <button className="button__icon" onClick={() => onEdit(test.id)}>

@@ -8,6 +8,7 @@ import {
   updateTest,
 } from "../../api/testApi";
 import TestItem from "./TestItem";
+import "./test.css";
 
 function TestsList() {
   const { projectID } = useParams<{ projectID?: string }>();

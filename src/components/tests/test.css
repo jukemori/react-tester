@@ -1,0 +1,21 @@
+.item__info {
+  display: flex;
+  align-items: center;
+}
+
+.item__status {
+  font-size: var(--small-font-size);
+  margin-left: 1rem;
+}
+
+.success-text {
+  color: green;
+}
+
+.failed-text {
+  color: red;
+}
+
+.button__toggle {
+  font-size: var(--small-font-size);
+}

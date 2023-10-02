@@ -20,8 +20,11 @@ function ProjectItem({
             value={projectNames[project.id] || ""}
             onChange={(e) => onNameChange(project.id, e.target.value)}
           />
-          <button className="button__icon" onClick={() => onUpdate(project.id)}>
-            <i className="bx bxs-check-circle icon__check"></i>
+          <button
+            className="button__update"
+            onClick={() => onUpdate(project.id)}
+          >
+            Update
           </button>
         </div>
       ) : (
