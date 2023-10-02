@@ -99,8 +99,7 @@ function ProjectList() {
   };
 
   return (
-    <div>
-      <h1>Your Projects</h1>
+    <>
       <ul>
         {projects.map((project) => (
           <ProjectItem
@@ -124,7 +123,7 @@ function ProjectList() {
         }}
       />
       <button onClick={createNewProject}>Create Project</button>
-    </div>
+    </>
   );
 }
 

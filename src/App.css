@@ -117,12 +117,13 @@ img {
 
 /*=============== REUSABLE CSS CLASSES ===============*/
 .section {
-  padding: 6rem 0 2rem;
+  padding: var(--mb-2);
 }
 
 .section__title {
   font-size: var(--h1-font-size);
   color: var(--title-color);
+  margin-bottom: var(--mb-2);
 }
 
 .section__subtitle {
@@ -131,17 +132,11 @@ img {
   margin-bottom: 4rem;
 }
 
-.section__title,
-.section__subtitle {
-  text-align: center;
-}
-
 /*=============== LAYOUT ===============*/
 .container {
   max-width: 968px;
   margin-left: 250px;
   margin-right: auto;
-  padding: var(--mb-1-5);
 }
 
 .grid {

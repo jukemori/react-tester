@@ -27,6 +27,7 @@ function TestsList() {
     const fetchData = async () => {
       try {
         const projectResponse = await fetchProject(+projectID, token);
+        console.log("Project Response:", projectResponse);
         setProject(projectResponse);
       } catch (error) {
         console.error(error);
@@ -122,8 +123,8 @@ function TestsList() {
   };
 
   return (
-    <div>
-      <h1>{project.name}</h1>
+    <>
+      <h1 className="section__title">{project.name}</h1>
       <ul>
         {tests.map((test) => (
           <TestItem
@@ -151,7 +152,7 @@ function TestsList() {
         }}
       />
       <button onClick={createNewTest}>Add Test</button>
-    </div>
+    </>
   );
 }
 

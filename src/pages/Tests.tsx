@@ -3,7 +3,9 @@ import TestsList from "../components/tests/TestsList";
 function Tests() {
   return (
     <div className="container">
-      <TestsList />
+      <section className="tests section">
+        <TestsList />
+      </section>
     </div>
   );
 }
