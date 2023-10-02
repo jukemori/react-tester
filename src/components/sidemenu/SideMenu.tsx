@@ -64,7 +64,7 @@ function SideMenu() {
 
           <ul>
             <li className="nav__item">
-              <Link to="/projects">Home</Link>
+              <Link to="/projects">Project List</Link>
             </li>
             <SideMenuProjects projects={projects} />
           </ul>

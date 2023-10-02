@@ -55,6 +55,7 @@ const Registration = () => {
       ) : (
         <form onSubmit={handleRegister}>
           <input
+            className="login__input register__input"
             type="text"
             name="name"
             placeholder="Name"
@@ -62,6 +63,7 @@ const Registration = () => {
             value={formData.name}
           />
           <input
+            className="login__input register__input"
             type="email"
             name="email"
             placeholder="Email"
@@ -69,13 +71,16 @@ const Registration = () => {
             value={formData.email}
           />
           <input
+            className="login__input register__input"
             type="password"
             name="password"
             placeholder="Password"
             onChange={handleChange}
             value={formData.password}
           />
-          <button type="submit">Register</button>
+          <button className="button register__button" type="submit">
+            Register
+          </button>
         </form>
       )}
     </div>
