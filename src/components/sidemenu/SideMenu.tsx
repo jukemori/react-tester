@@ -49,20 +49,21 @@ function SideMenu() {
       {authenticated && (
         <div className="side-menu">
           <div className="user__container">
-            <div className="user__info">
-              <img src={userImage} alt="" className="user__img" />
-              {user !== null && (
-                <div>
-                  <p>{user.name}</p>
-                  <p>{user.email}</p>
-                </div>
-              )}
-            </div>
-            <button onClick={handleLogout}>Logout</button>
+            <img src={userImage} alt="" className="user__img" />
+            {user !== null && (
+              <div className="user__info">
+                <p className="user__name">{user.name}</p>
+                <p className="user__email">{user.email}</p>
+              </div>
+            )}
           </div>
 
+          <button className="button__logout" onClick={handleLogout}>
+            Logout
+          </button>
+
           <ul>
-            <li>
+            <li className="nav__item">
               <Link to="/projects">Home</Link>
             </li>
             <SideMenuProjects projects={projects} />

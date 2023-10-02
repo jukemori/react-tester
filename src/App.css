@@ -101,8 +101,17 @@ ul {
   list-style: none;
 }
 
+li {
+  margin-bottom: 0.5rem;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 a {
   text-decoration: none;
+  color: var(--title-color);
 }
 
 button {
