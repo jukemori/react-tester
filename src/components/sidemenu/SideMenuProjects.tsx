@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 interface SideMenuProjectsProps {
   projects: Project[];
@@ -9,7 +9,14 @@ function SideMenuProjects({ projects }: SideMenuProjectsProps) {
     <ul>
       {projects.map((project) => (
         <li key={project.id} className="nav__item">
-          <Link to={`/projects/${project.id}`}>{project.name}</Link>
+          <NavLink
+            to={`/projects/${project.id}`}
+            className={({ isActive }) =>
+              isActive ? "nav__link active-link" : "nav__link"
+            }
+          >
+            {project.name}
+          </NavLink>
         </li>
       ))}
     </ul>

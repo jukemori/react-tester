@@ -62,3 +62,9 @@
 .nav__item {
   margin-bottom: 1rem;
 }
+
+.active-link {
+  color: var(--blue-color);
+  text-decoration: underline;
+  font-weight: var(--font-medium);
+}

@@ -17,6 +17,10 @@
   justify-content: space-between;
 }
 
+.code__input {
+  width: 100%;
+}
+
 .code__input--create {
   width: 600px;
   outline: none;

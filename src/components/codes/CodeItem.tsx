@@ -20,14 +20,17 @@ function CodeItem({
       {isEditing ? (
         <div className="code__card">
           <input
-            className="item__input"
+            className="item__input code__input"
             type="text"
             placeholder="Updated Code"
             value={updatedCodeBody}
             onChange={handleCodeBodyChange}
           />
-          <button onClick={() => onUpdate(updatedCodeBody)}>
-            <i className="bx bxs-check-circle icon__check"></i>
+          <button
+            className="button__update"
+            onClick={() => onUpdate(updatedCodeBody)}
+          >
+            Update
           </button>
         </div>
       ) : (
