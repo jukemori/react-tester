@@ -28,21 +28,17 @@
   transition: opacity 0.3s ease;
 }
 
-.code__button {
-  margin-left: 1rem;
-}
-
 .code__card:hover .code__buttons {
   opacity: 1;
 }
 
 .suggestion__list {
   width: 600px;
-  padding: 0 1rem;
 }
 
 .suggestion__item {
   transition: background-color 0.3s, cursor 0.3s;
+  padding-left: 1rem;
 }
 
 .suggestion__item:hover {

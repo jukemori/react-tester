@@ -5,7 +5,7 @@ import {
   fetchTests,
   createTest,
   deleteTest,
-  updateTestName,
+  updateTest,
 } from "../../api/testApi";
 import TestItem from "./TestItem";
 
@@ -95,17 +95,23 @@ function TestsList() {
     }
   };
 
-  const updateTestItemName = async (testId: number, newName: string) => {
+  const updateTestItem = async (
+    testId: number,
+    newName: string,
+    newIsSuccessful: boolean
+  ) => {
     try {
       if (!projectID) {
         return; // Handle the case where projectID is undefined
       }
 
       if (token) {
-        await updateTestName(+projectID, testId, newName, token);
+        await updateTest(+projectID, testId, newName, newIsSuccessful, token);
         setTests((prevTests) =>
           prevTests.map((test) =>
-            test.id === testId ? { ...test, name: newName } : test
+            test.id === testId
+              ? { ...test, name: newName, is_successful: newIsSuccessful }
+              : test
           )
         );
         setEditingTestId(null);
@@ -132,25 +138,36 @@ function TestsList() {
             projectID={+projectID!}
             isEditing={editingTestId === test.id}
             onEdit={startEditingTest}
-            onUpdate={updateTestItemName}
+            onUpdate={(testId, newName, newIsSuccessful) => {
+              updateTestItem(testId, newName, newIsSuccessful);
+            }}
             onDelete={deleteTestItem}
             onNameChange={(testId, newName) => {
               const updatedTestNames = { ...testNames };
               updatedTestNames[testId] = newName;
               setTestNames(updatedTestNames);
             }}
+            onIsSuccessfulChange={(testId, newIsSuccessful) => {
+              updateTestItem(testId, testNames[testId], newIsSuccessful);
+            }}
           />
         ))}
       </ul>
-      <input
-        type="text"
-        placeholder="Test Name"
-        value={newTest}
-        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-          setNewTest(e.target.value);
-        }}
-      />
-      <button onClick={createNewTest}>Add Test</button>
+
+      <div className="item__create">
+        <input
+          className="item__input--create"
+          type="text"
+          placeholder="Test Name"
+          value={newTest}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+            setNewTest(e.target.value);
+          }}
+        />
+        <button className="button" onClick={createNewTest}>
+          Add Test
+        </button>
+      </div>
     </>
   );
 }

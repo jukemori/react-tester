@@ -124,7 +124,9 @@ function ProjectList() {
             setNewProject(e.target.value);
           }}
         />
-        <button onClick={createNewProject}>Create Project</button>
+        <button className="button" onClick={createNewProject}>
+          Create Project
+        </button>
       </div>
     </>
   );

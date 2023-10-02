@@ -28,16 +28,18 @@ interface ProjectItemProps {
 interface Test {
   id: number;
   name: string;
+  is_successful: boolean;
 }
 
 interface TestItemProps {
-  test: { id: number; name: string };
+  test: { id: number; name: string; is_successful: boolean };
   isEditing: boolean;
   onEdit: (testId: number) => void;
-  onUpdate: (testId: number, newName: string) => void;
+  onUpdate: (testId: number, newName: string, newIsSuccessful: boolean) => void; // Include newIsSuccessful
   onDelete: (testId: number) => void;
   projectID: number;
   onNameChange: (testId: number, newName: string) => void;
+  onIsSuccessfulChange: (testId: number, newIsSuccessful: boolean) => void; // Add this line
 }
 
 interface Code {

@@ -9,13 +9,6 @@ interface Project {
   // Add other properties as needed
 }
 
-interface Test {
-  // Define the structure of a test
-  id: number;
-  name: string;
-  // Add other properties as needed
-}
-
 // Fetch project by ID
 export const fetchProject = async (
   projectID: number,
@@ -82,16 +75,18 @@ export const deleteTest = async (
 };
 
 // Update the name of a test by project ID and test ID
-export const updateTestName = async (
+export const updateTest = async (
   projectID: number,
   testID: number,
   testName: string,
+  isSuccessful: boolean,
   token: string
 ): Promise<Test> => {
   const response: AxiosResponse<Test> = await axios.put(
     `${API_BASE_URL}${projectID}/tests/${testID}`,
     {
       name: testName,
+      is_successful: isSuccessful, // Include the is_successful property in the request
     },
     {
       headers: {

@@ -19,7 +19,11 @@ function CodesList() {
   const projectIdNumber = parseInt(projectID ?? "0", 10); // Convert to number with default value of 0
   const testIdNumber = parseInt(testID ?? "0", 10); // Convert to number with default value of 0
   const token = localStorage.getItem("token") || "";
-  const [test, setTest] = useState<Test>({ id: 0, name: "" });
+  const [test, setTest] = useState<Test>({
+    id: 0,
+    name: "",
+    is_successful: false,
+  });
   const [codes, setCodes] = useState<Code[]>([]);
   const [editingCodeId, setEditingCodeId] = useState<number | null>(null);
   const [codeName, setCodeName] = useState<string>("");
@@ -230,7 +234,6 @@ function CodesList() {
         </button>
       </div>
 
-      {/* Suggestions dropdown */}
       {suggestions.length > 0 && (
         <ul className="suggestion__list">
           {suggestions.map((suggestion) => (

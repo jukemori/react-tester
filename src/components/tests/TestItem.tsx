@@ -9,16 +9,24 @@ const TestItem: React.FC<TestItemProps> = ({
   onDelete,
   projectID,
   onNameChange,
+  onIsSuccessfulChange,
 }) => {
   const [testName, setTestName] = useState(test.name);
+  const [isSuccessful, setIsSuccessful] = useState(test.is_successful);
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTestName(e.target.value);
     onNameChange(test.id, e.target.value); // Notify parent component of name change
   };
 
+  const handleIsSuccessfulChange = () => {
+    const newIsSuccessful = !isSuccessful;
+    setIsSuccessful(newIsSuccessful);
+    onIsSuccessfulChange(test.id, newIsSuccessful); // Notify parent component of is_successful change
+  };
+
   const handleUpdate = () => {
-    onUpdate(test.id, testName);
+    onUpdate(test.id, testName, isSuccessful);
   };
 
   return (
@@ -32,6 +40,14 @@ const TestItem: React.FC<TestItemProps> = ({
             value={testName}
             onChange={handleNameChange}
           />
+          <label>
+            <input
+              type="checkbox"
+              checked={isSuccessful}
+              onChange={handleIsSuccessfulChange}
+            />
+            Successful
+          </label>
           <button className="button__icon" onClick={handleUpdate}>
             <i className="bx bxs-check-circle icon__check"></i>
           </button>
@@ -41,6 +57,7 @@ const TestItem: React.FC<TestItemProps> = ({
           <Link to={`/projects/${projectID}/tests/${test.id}`}>
             {test.name}
           </Link>
+          <p>{test.is_successful ? "Success" : "Failed"}</p>
 
           <div className="item__buttons">
             <button className="button__icon" onClick={() => onEdit(test.id)}>
