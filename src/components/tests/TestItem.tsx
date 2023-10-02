@@ -24,23 +24,33 @@ const TestItem: React.FC<TestItemProps> = ({
   return (
     <li key={test.id}>
       {isEditing ? (
-        <>
+        <div className="item__card">
           <input
+            className="item__input"
             type="text"
             placeholder="Updated Test Name"
             value={testName}
             onChange={handleNameChange}
           />
-          <button onClick={handleUpdate}>Update Name</button>
-        </>
+          <button className="button__icon" onClick={handleUpdate}>
+            <i className="bx bxs-check-circle icon__check"></i>
+          </button>
+        </div>
       ) : (
-        <>
+        <div className="item__card">
           <Link to={`/projects/${projectID}/tests/${test.id}`}>
             {test.name}
           </Link>
-          <button onClick={() => onDelete(test.id)}>Delete</button>
-          <button onClick={() => onEdit(test.id)}>Edit</button>
-        </>
+
+          <div className="item__buttons">
+            <button className="button__icon" onClick={() => onEdit(test.id)}>
+              <i className="bx bxs-edit-alt icon__edit"></i>
+            </button>
+            <button className="button__icon" onClick={() => onDelete(test.id)}>
+              <i className="bx bxs-trash icon__delete"></i>
+            </button>
+          </div>
+        </div>
       )}
     </li>
   );

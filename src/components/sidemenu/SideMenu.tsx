@@ -48,17 +48,6 @@ function SideMenu() {
     <>
       {authenticated && (
         <div className="side-menu">
-          <div>
-            <div className="logo"></div>
-            <ul>
-              <li></li>
-              <li>
-                <Link to="/projects">Home</Link>
-              </li>
-              <SideMenuProjects projects={projects} />
-            </ul>
-          </div>
-
           <div className="user__container">
             <div className="user__info">
               <img src={userImage} alt="" className="user__img" />
@@ -71,6 +60,13 @@ function SideMenu() {
             </div>
             <button onClick={handleLogout}>Logout</button>
           </div>
+
+          <ul>
+            <li>
+              <Link to="/projects">Home</Link>
+            </li>
+            <SideMenuProjects projects={projects} />
+          </ul>
         </div>
       )}
     </>

@@ -100,7 +100,7 @@ function ProjectList() {
 
   return (
     <>
-      <ul>
+      <ul className="item__cards">
         {projects.map((project) => (
           <ProjectItem
             key={project.id}
@@ -114,15 +114,18 @@ function ProjectList() {
           />
         ))}
       </ul>
-      <input
-        type="text"
-        placeholder="Project Name"
-        value={newProject}
-        onChange={(e) => {
-          setNewProject(e.target.value);
-        }}
-      />
-      <button onClick={createNewProject}>Create Project</button>
+      <div className="item__create">
+        <input
+          className="item__input--create"
+          type="text"
+          placeholder="Project Name"
+          value={newProject}
+          onChange={(e) => {
+            setNewProject(e.target.value);
+          }}
+        />
+        <button onClick={createNewProject}>Create Project</button>
+      </div>
     </>
   );
 }

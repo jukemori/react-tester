@@ -27,7 +27,6 @@ function TestsList() {
     const fetchData = async () => {
       try {
         const projectResponse = await fetchProject(+projectID, token);
-        console.log("Project Response:", projectResponse);
         setProject(projectResponse);
       } catch (error) {
         console.error(error);
@@ -125,7 +124,7 @@ function TestsList() {
   return (
     <>
       <h1 className="section__title">{project.name}</h1>
-      <ul>
+      <ul className="item__cards">
         {tests.map((test) => (
           <TestItem
             key={test.id}

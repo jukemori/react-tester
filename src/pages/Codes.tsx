@@ -3,7 +3,9 @@ import CodesList from "../components/codes/CodesList";
 function Codes() {
   return (
     <div className="container">
-      <CodesList />
+      <section className="codes section">
+        <CodesList />
+      </section>
     </div>
   );
 }

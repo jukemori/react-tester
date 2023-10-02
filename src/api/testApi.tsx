@@ -29,7 +29,6 @@ export const fetchProject = async (
       },
     }
   );
-  console.log("API Response:", response.data);
   return response.data;
 };
 

@@ -7,8 +7,9 @@ import {
   createCode,
   updateCode,
   deleteCode,
-} from "../../api/codeApi"; // Import the API functions from your separate file
-import CodeItem from "./CodeItem"; // Import the CodeItem component
+} from "../../api/codeApi";
+import CodeItem from "./CodeItem";
+import "./codes.css";
 
 function CodesList() {
   const { projectID, testID } = useParams<{
@@ -197,34 +198,44 @@ function CodesList() {
   };
 
   return (
-    <div>
-      <h1>{test.name}</h1>
-      <ul>
-        {codes.map((code) => (
-          <CodeItem
-            key={code.id}
-            code={code}
-            isEditing={editingCodeId === code.id}
-            onUpdate={(updatedCodeBody) =>
-              updateCodeItem(code.id, updatedCodeBody)
-            }
-            onDelete={() => deleteCodeItem(code.id)}
-            onEdit={() => startEditingCode(code.id)}
-          />
-        ))}
-      </ul>
-      <input
-        type="text"
-        placeholder="Code Name"
-        value={codeName}
-        onChange={handleInputChange}
-      />
+    <>
+      <div className="codes__list">
+        <p className="codes__title">{`test('${test.name}', async function () {`}</p>
+        <ul>
+          {codes.map((code) => (
+            <CodeItem
+              key={code.id}
+              code={code}
+              isEditing={editingCodeId === code.id}
+              onUpdate={(updatedCodeBody) =>
+                updateCodeItem(code.id, updatedCodeBody)
+              }
+              onDelete={() => deleteCodeItem(code.id)}
+              onEdit={() => startEditingCode(code.id)}
+            />
+          ))}
+        </ul>
+        <p>&#125;&#41;;</p>
+      </div>
+      <div className="code__create">
+        <input
+          className="code__input--create"
+          type="text"
+          placeholder="Code Name"
+          value={codeName}
+          onChange={handleInputChange}
+        />
+        <button className="button code__button" onClick={createNewCode}>
+          Add code
+        </button>
+      </div>
 
       {/* Suggestions dropdown */}
       {suggestions.length > 0 && (
-        <ul>
+        <ul className="suggestion__list">
           {suggestions.map((suggestion) => (
             <li
+              className="suggestion__item"
               key={suggestion.id}
               onClick={() => selectSuggestion(suggestion)}
             >
@@ -233,9 +244,7 @@ function CodesList() {
           ))}
         </ul>
       )}
-
-      <button onClick={createNewCode}>Add code</button>
-    </div>
+    </>
   );
 }
 
