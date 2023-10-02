@@ -1,4 +1,4 @@
-import { useEffect, useState, ChangeEvent } from "react";
+import { useEffect, useState, ChangeEvent, useRef } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import {
@@ -16,8 +16,8 @@ function CodesList() {
     projectID: string;
     testID: string;
   }>();
-  const projectIdNumber = parseInt(projectID ?? "0", 10); // Convert to number with default value of 0
-  const testIdNumber = parseInt(testID ?? "0", 10); // Convert to number with default value of 0
+  const projectIdNumber = parseInt(projectID ?? "0", 10);
+  const testIdNumber = parseInt(testID ?? "0", 10);
   const token = localStorage.getItem("token") || "";
   const [test, setTest] = useState<Test>({
     id: 0,
@@ -30,6 +30,7 @@ function CodesList() {
   const [suggestions, setSuggestions] = useState<
     { id: string; suggestion_text: string }[]
   >([]);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,14 +58,10 @@ function CodesList() {
 
   const createNewCode = async () => {
     try {
-      const response = await createCode(
-        projectIdNumber,
-        testIdNumber,
-        codeName,
-        token
-      );
-      setCodes((prevCodes) => [...prevCodes, response]);
+      await createCode(projectIdNumber, testIdNumber, codeName, token);
+      // Clear the input field and suggestions when a new code is created
       setCodeName("");
+      setSuggestions([]);
     } catch (error) {
       console.error(error);
     }
@@ -198,7 +195,11 @@ function CodesList() {
 
       return words.join(" ");
     });
-    setSuggestions([]);
+
+    // Check if the input field is focused, if not, clear suggestions
+    if (inputRef.current && document.activeElement !== inputRef.current) {
+      setSuggestions([]);
+    }
   };
 
   return (
@@ -228,6 +229,7 @@ function CodesList() {
           placeholder="Code Name"
           value={codeName}
           onChange={handleInputChange}
+          ref={inputRef}
         />
         <button className="button code__button" onClick={createNewCode}>
           Add code
