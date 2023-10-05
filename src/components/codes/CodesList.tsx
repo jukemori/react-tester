@@ -58,7 +58,16 @@ function CodesList() {
 
   const createNewCode = async () => {
     try {
-      await createCode(projectIdNumber, testIdNumber, codeName, token);
+      const newCode = await createCode(
+        projectIdNumber,
+        testIdNumber,
+        codeName,
+        token
+      );
+
+      // Update the code list with the new code
+      setCodes((prevCodes) => [...prevCodes, newCode]);
+
       // Clear the input field and suggestions when a new code is created
       setCodeName("");
       setSuggestions([]);
@@ -205,7 +214,7 @@ function CodesList() {
   return (
     <>
       <div className="codes__list">
-        <p className="codes__title">{`test('${test.name}', async function () {`}</p>
+        <p className="codes__title">{`it('${test.name}', async function() {`}</p>
         <ul>
           {codes.map((code) => (
             <CodeItem
