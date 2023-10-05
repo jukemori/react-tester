@@ -20,10 +20,12 @@ import {
 } from "./projectActions";
 
 const API_BASE_URL = "http://localhost:8000/api/projects/";
+const log = (message) => console.log(message);
 
-// Sagas for fetching projects
+// Saga for fetching projects
 function* fetchProjectsSaga(action: ProjectActionTypes) {
   try {
+    log("Token:", action.payload.token);
     const response: AxiosResponse<Project[]> = yield call(
       axios.get,
       API_BASE_URL,
@@ -39,7 +41,7 @@ function* fetchProjectsSaga(action: ProjectActionTypes) {
   }
 }
 
-// Sagas for deleting a project
+// Saga for deleting a project
 function* deleteProjectSaga(action: ProjectActionTypes) {
   try {
     yield call(axios.delete, `${API_BASE_URL}${action.payload.projectId}`, {
@@ -53,7 +55,7 @@ function* deleteProjectSaga(action: ProjectActionTypes) {
   }
 }
 
-// Sagas for updating a project name
+// Saga for updating a project name
 function* updateProjectNameSaga(action: ProjectActionTypes) {
   try {
     const response: AxiosResponse<Project> = yield call(
@@ -74,7 +76,7 @@ function* updateProjectNameSaga(action: ProjectActionTypes) {
   }
 }
 
-// Sagas for creating a project
+// Saga for creating a project
 function* createProjectSaga(action: ProjectActionTypes) {
   try {
     const response: AxiosResponse<Project> = yield call(

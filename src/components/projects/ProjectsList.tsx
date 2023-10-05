@@ -9,7 +9,7 @@ import {
 } from "../../redux/project/projectActions"; // Adjust the import path
 
 import ProjectItem from "./ProjectItem";
-import store from "../../redux/store";
+import { RootState } from "../../redux/store";
 
 function ProjectList() {
   const projects = useSelector((state: RootState) => state.projects.projects);
