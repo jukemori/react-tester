@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   FETCH_PROJECTS,
@@ -37,7 +37,9 @@ function ProjectList() {
       await dispatch({
         type: UPDATE_PROJECT_NAME,
         payload: { projectId, newName, token },
-      }); // Corrected action type
+      });
+      // Dispatch FETCH_PROJECTS to refresh the project list
+      dispatch({ type: FETCH_PROJECTS, payload: { token } });
     } catch (error) {
       console.error(error);
     }
@@ -45,7 +47,9 @@ function ProjectList() {
 
   const deleteProjectById = async (projectId: number) => {
     try {
-      await dispatch({ type: DELETE_PROJECT, payload: { projectId, token } }); // Corrected action type
+      await dispatch({ type: DELETE_PROJECT, payload: { projectId, token } });
+      // Dispatch FETCH_PROJECTS to refresh the project list
+      dispatch({ type: FETCH_PROJECTS, payload: { token } });
     } catch (error) {
       console.error(error);
     }
@@ -63,7 +67,9 @@ function ProjectList() {
       await dispatch({
         type: CREATE_PROJECT,
         payload: { newProjectData, token },
-      }); // Corrected action type
+      });
+      // Dispatch FETCH_PROJECTS to refresh the project list
+      dispatch({ type: FETCH_PROJECTS, payload: { token } });
       setNewProject("");
     } catch (error) {
       console.error(error);
