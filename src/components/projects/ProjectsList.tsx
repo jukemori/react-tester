@@ -22,7 +22,8 @@ function ProjectList() {
   const token: string = localStorage.getItem("token") || "";
 
   useEffect(() => {
-    dispatch({ type: FETCH_PROJECTS, payload: token }); // Corrected action type
+    dispatch({ type: FETCH_PROJECTS, payload: { token } });
+    // Corrected action type
   }, [dispatch, token]);
 
   const startEditingProject = (projectId: number) => {

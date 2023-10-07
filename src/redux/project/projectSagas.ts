@@ -20,18 +20,17 @@ import {
 } from "./projectActions";
 
 const API_BASE_URL = "http://localhost:8000/api/projects/";
-const log = (message) => console.log(message);
 
 // Saga for fetching projects
 function* fetchProjectsSaga(action: ProjectActionTypes) {
   try {
-    log("Token:", action.payload.token);
     const response: AxiosResponse<Project[]> = yield call(
       axios.get,
       API_BASE_URL,
       {
         headers: {
-          Authorization: "Bearer " + action.payload.token,
+          Authorization:
+            "Bearer " + (action.payload as { token: string }).token,
         },
       }
     );
@@ -43,6 +42,8 @@ function* fetchProjectsSaga(action: ProjectActionTypes) {
 
 // Saga for deleting a project
 function* deleteProjectSaga(action: ProjectActionTypes) {
+  console.log("Action in deleteProjectsSaga:", action);
+  console.log("Token:", action.payload.token);
   try {
     yield call(axios.delete, `${API_BASE_URL}${action.payload.projectId}`, {
       headers: {
