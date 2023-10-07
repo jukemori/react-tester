@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   FETCH_PROJECTS,
@@ -20,13 +20,14 @@ function ProjectList() {
   );
   const [newProject, setNewProject] = useState<string>("");
   const token: string = localStorage.getItem("token") || "";
+  const editMode = useSelector((state: RootState) => state.projects.editMode);
 
   useEffect(() => {
     dispatch({ type: FETCH_PROJECTS, payload: { token } });
     // Corrected action type
   }, [dispatch, token]);
 
-  const startEditingProject = (projectId: number) => {
+  const startEditing = (projectId: number) => {
     // Dispatch the startEditingProject action
     dispatch(startEditingProject(projectId));
   };
@@ -39,7 +40,7 @@ function ProjectList() {
         payload: { projectId, newName, token },
       });
       // Dispatch FETCH_PROJECTS to refresh the project list
-      dispatch({ type: FETCH_PROJECTS, payload: { token } });
+      // dispatch({ type: FETCH_PROJECTS, payload: { token } });
     } catch (error) {
       console.error(error);
     }
@@ -90,9 +91,9 @@ function ProjectList() {
           <ProjectItem
             key={project.id}
             project={project}
-            isEditing={!!projectNames[project.id]}
+            isEditing={!!editMode[project.id]}
             projectNames={projectNames}
-            onEdit={() => startEditingProject(project.id)}
+            onEdit={() => startEditing(project.id)}
             onUpdate={updateProject}
             onDelete={deleteProjectById}
             onNameChange={handleProjectNameChange}
