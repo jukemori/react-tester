@@ -41,6 +41,64 @@ interface FetchProjectsFailureAction {
   payload: Error;
 }
 
+interface DeleteProjectAction {
+  type: typeof DELETE_PROJECT;
+  payload: {
+    projectId: number;
+    token: string;
+  };
+}
+
+interface DeleteProjectSuccessAction {
+  type: typeof DELETE_PROJECT_SUCCESS;
+  payload: number; // Project ID
+}
+
+interface DeleteProjectFailureAction {
+  type: typeof DELETE_PROJECT_FAILURE;
+  payload: Error;
+}
+
+interface UpdateProjectNameAction {
+  type: typeof UPDATE_PROJECT_NAME;
+  payload: {
+    projectId: number;
+    newName: string;
+    token: string;
+  };
+}
+
+interface UpdateProjectNameSuccessAction {
+  type: typeof UPDATE_PROJECT_NAME_SUCCESS;
+  payload: Project;
+}
+
+interface UpdateProjectNameFailureAction {
+  type: typeof UPDATE_PROJECT_NAME_FAILURE;
+  payload: Error;
+}
+
+interface CreateProjectAction {
+  type: typeof CREATE_PROJECT;
+  payload: {
+    newProjectData: {
+      name: string;
+      user_id: number; // Assuming user_id is a number
+    };
+    token: string;
+  };
+}
+
+interface CreateProjectSuccessAction {
+  type: typeof CREATE_PROJECT_SUCCESS;
+  payload: Project;
+}
+
+interface CreateProjectFailureAction {
+  type: typeof CREATE_PROJECT_FAILURE;
+  payload: Error;
+}
+
 interface StartEditingProjectAction {
   type: typeof START_EDITING_PROJECT;
   payload: {
@@ -58,10 +116,91 @@ export const startEditingProject = (
   },
 });
 
-// Define other action interfaces here
+// Action creators for other actions
+export function fetchProjects(token: string): FetchProjectsAction {
+  return {
+    type: FETCH_PROJECTS,
+    payload: {
+      token,
+    },
+  };
+}
+
+export function fetchProjectsSuccess(
+  projects: Project[]
+): FetchProjectsSuccessAction {
+  return {
+    type: FETCH_PROJECTS_SUCCESS,
+    payload: projects,
+  };
+}
+
+export function fetchProjectsFailure(error: Error): FetchProjectsFailureAction {
+  return {
+    type: FETCH_PROJECTS_FAILURE,
+    payload: error,
+  };
+}
+
+export function createProjectFailure(error: any) {
+  return {
+    type: CREATE_PROJECT_FAILURE,
+    payload: error,
+  };
+}
+
+export function createProjectSuccess(project: Project) {
+  return {
+    type: CREATE_PROJECT_SUCCESS,
+    payload: project,
+  };
+}
+
+// Action creator for deleting a project success
+export function deleteProjectSuccess(projectId: number) {
+  return {
+    type: DELETE_PROJECT_SUCCESS,
+    payload: projectId,
+  };
+}
+
+// Action creator for deleting a project failure
+export function deleteProjectFailure(error: Error) {
+  return {
+    type: DELETE_PROJECT_FAILURE,
+    payload: error,
+  };
+}
+
+// Action creator for updating a project name success
+export function updateProjectNameSuccess(project: Project) {
+  return {
+    type: UPDATE_PROJECT_NAME_SUCCESS,
+    payload: project,
+  };
+}
+
+// Action creator for updating a project name failure
+export function updateProjectNameFailure(error: Error) {
+  return {
+    type: UPDATE_PROJECT_NAME_FAILURE,
+    payload: error,
+  };
+}
+
+// Define action creators for DELETE_PROJECT, UPDATE_PROJECT_NAME, and CREATE_PROJECT similarly
 
 export type ProjectActionTypes =
   | FetchProjectsAction
   | FetchProjectsSuccessAction
-  | FetchProjectsFailureAction;
-// Define other action types here
+  | FetchProjectsFailureAction
+  | DeleteProjectAction
+  | DeleteProjectSuccessAction
+  | DeleteProjectFailureAction
+  | UpdateProjectNameAction
+  | UpdateProjectNameSuccessAction
+  | UpdateProjectNameFailureAction
+  | CreateProjectAction
+  | CreateProjectSuccessAction
+  | CreateProjectFailureAction
+  | StartEditingProjectAction;

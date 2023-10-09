@@ -1,63 +1,46 @@
 import { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import {
-  fetchProjects,
-  deleteProject,
-  updateProjectName,
-  createProject,
-} from "../../api/projectApi";
+  FETCH_PROJECTS,
+  DELETE_PROJECT,
+  UPDATE_PROJECT_NAME,
+  CREATE_PROJECT,
+  startEditingProject,
+} from "../../redux/project/projectActions"; // Adjust the import path
+
 import ProjectItem from "./ProjectItem";
+import { RootState } from "../../redux/store";
 
 function ProjectList() {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const projects = useSelector((state: RootState) => state.projects.projects);
+  const dispatch = useDispatch();
+
   const [projectNames, setProjectNames] = useState<{ [key: number]: string }>(
     {}
   );
   const [newProject, setNewProject] = useState<string>("");
-  const [editMode, setEditMode] = useState<{ [key: number]: boolean }>({});
   const token: string = localStorage.getItem("token") || "";
+  const editMode = useSelector((state: RootState) => state.projects.editMode);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (!token) {
-          // Handle unauthenticated state as needed
-          return;
-        }
+    dispatch({ type: FETCH_PROJECTS, payload: { token } });
+    // Corrected action type
+  }, [dispatch, token]);
 
-        const response: Project[] = await fetchProjects(token);
-        setProjects(response);
-        const initialProjectNames: { [key: number]: string } = {};
-        response.forEach((project) => {
-          initialProjectNames[project.id] = project.name;
-        });
-        setProjectNames(initialProjectNames);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchData();
-  }, [token]);
-
-  const startEditingProject = (projectId: number) => {
-    setEditMode((prevEditMode) => ({ ...prevEditMode, [projectId]: true }));
+  const startEditing = (projectId: number) => {
+    // Dispatch the startEditingProject action
+    dispatch(startEditingProject(projectId));
   };
 
   const updateProject = async (projectId: number) => {
     try {
       const newName = projectNames[projectId];
-      const updatedProject = await updateProjectName(projectId, newName, token);
-      setProjects((prevProjects) =>
-        prevProjects.map((project) =>
-          project.id === projectId
-            ? { ...project, name: updatedProject.name }
-            : project
-        )
-      );
-      setEditMode((prevEditMode) => ({
-        ...prevEditMode,
-        [projectId]: false,
-      }));
+      await dispatch({
+        type: UPDATE_PROJECT_NAME,
+        payload: { projectId, newName, token },
+      });
+      // Dispatch FETCH_PROJECTS to refresh the project list
+      // dispatch({ type: FETCH_PROJECTS, payload: { token } });
     } catch (error) {
       console.error(error);
     }
@@ -65,10 +48,9 @@ function ProjectList() {
 
   const deleteProjectById = async (projectId: number) => {
     try {
-      await deleteProject(projectId, token);
-      setProjects((prevProjects) =>
-        prevProjects.filter((project) => project.id !== projectId)
-      );
+      await dispatch({ type: DELETE_PROJECT, payload: { projectId, token } });
+      // Dispatch FETCH_PROJECTS to refresh the project list
+      dispatch({ type: FETCH_PROJECTS, payload: { token } });
     } catch (error) {
       console.error(error);
     }
@@ -83,8 +65,12 @@ function ProjectList() {
         name: newProject,
         user_id: userId,
       };
-      const createdProject = await createProject(newProjectData, token);
-      setProjects((prevProjects) => [...prevProjects, createdProject]);
+      await dispatch({
+        type: CREATE_PROJECT,
+        payload: { newProjectData, token },
+      });
+      // Dispatch FETCH_PROJECTS to refresh the project list
+      dispatch({ type: FETCH_PROJECTS, payload: { token } });
       setNewProject("");
     } catch (error) {
       console.error(error);
@@ -107,7 +93,7 @@ function ProjectList() {
             project={project}
             isEditing={!!editMode[project.id]}
             projectNames={projectNames}
-            onEdit={startEditingProject}
+            onEdit={() => startEditing(project.id)}
             onUpdate={updateProject}
             onDelete={deleteProjectById}
             onNameChange={handleProjectNameChange}

@@ -21,7 +21,7 @@ import {
 
 const API_BASE_URL = "http://localhost:8000/api/projects/";
 
-// Sagas for fetching projects
+// Saga for fetching projects
 function* fetchProjectsSaga(action: ProjectActionTypes) {
   try {
     const response: AxiosResponse<Project[]> = yield call(
@@ -29,7 +29,8 @@ function* fetchProjectsSaga(action: ProjectActionTypes) {
       API_BASE_URL,
       {
         headers: {
-          Authorization: "Bearer " + action.payload.token,
+          Authorization:
+            "Bearer " + (action.payload as { token: string }).token,
         },
       }
     );
@@ -39,8 +40,10 @@ function* fetchProjectsSaga(action: ProjectActionTypes) {
   }
 }
 
-// Sagas for deleting a project
+// Saga for deleting a project
 function* deleteProjectSaga(action: ProjectActionTypes) {
+  console.log("Action in deleteProjectsSaga:", action);
+  console.log("Token:", action.payload.token);
   try {
     yield call(axios.delete, `${API_BASE_URL}${action.payload.projectId}`, {
       headers: {
@@ -53,7 +56,7 @@ function* deleteProjectSaga(action: ProjectActionTypes) {
   }
 }
 
-// Sagas for updating a project name
+// Saga for updating a project name
 function* updateProjectNameSaga(action: ProjectActionTypes) {
   try {
     const response: AxiosResponse<Project> = yield call(
@@ -74,7 +77,7 @@ function* updateProjectNameSaga(action: ProjectActionTypes) {
   }
 }
 
-// Sagas for creating a project
+// Saga for creating a project
 function* createProjectSaga(action: ProjectActionTypes) {
   try {
     const response: AxiosResponse<Project> = yield call(
