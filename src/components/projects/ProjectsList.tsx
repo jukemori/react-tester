@@ -6,7 +6,8 @@ import {
   UPDATE_PROJECT_NAME,
   CREATE_PROJECT,
   startEditingProject,
-} from "../../redux/project/projectActions"; // Adjust the import path
+  endEditingProject,
+} from "../../redux/project/projectActions";
 
 import ProjectItem from "./ProjectItem";
 import { RootState } from "../../redux/store";
@@ -24,12 +25,16 @@ function ProjectList() {
 
   useEffect(() => {
     dispatch({ type: FETCH_PROJECTS, payload: { token } });
-    // Corrected action type
   }, [dispatch, token]);
 
   const startEditing = (projectId: number) => {
-    // Dispatch the startEditingProject action
+    // Dispatch the startEditingProject action with isEditing set to true
     dispatch(startEditingProject(projectId));
+  };
+
+  const endEditing = (projectId: number) => {
+    // Dispatch the endEditingProject action with isEditing set to true
+    dispatch(endEditingProject(projectId));
   };
 
   const updateProject = async (projectId: number) => {
@@ -39,8 +44,8 @@ function ProjectList() {
         type: UPDATE_PROJECT_NAME,
         payload: { projectId, newName, token },
       });
-      // Dispatch FETCH_PROJECTS to refresh the project list
-      // dispatch({ type: FETCH_PROJECTS, payload: { token } });
+      // Set isEditing to false after updating
+      endEditing(projectId);
     } catch (error) {
       console.error(error);
     }
@@ -49,8 +54,6 @@ function ProjectList() {
   const deleteProjectById = async (projectId: number) => {
     try {
       await dispatch({ type: DELETE_PROJECT, payload: { projectId, token } });
-      // Dispatch FETCH_PROJECTS to refresh the project list
-      dispatch({ type: FETCH_PROJECTS, payload: { token } });
     } catch (error) {
       console.error(error);
     }
@@ -69,8 +72,6 @@ function ProjectList() {
         type: CREATE_PROJECT,
         payload: { newProjectData, token },
       });
-      // Dispatch FETCH_PROJECTS to refresh the project list
-      dispatch({ type: FETCH_PROJECTS, payload: { token } });
       setNewProject("");
     } catch (error) {
       console.error(error);
