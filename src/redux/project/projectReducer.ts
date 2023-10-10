@@ -8,6 +8,7 @@ import {
   CREATE_PROJECT_SUCCESS,
   CREATE_PROJECT_FAILURE,
   START_EDITING_PROJECT,
+  END_EDITING_PROJECT,
   ProjectActionTypes,
 } from "./projectActions";
 
@@ -56,6 +57,15 @@ const projectReducer = (
         editMode: {
           ...state.editMode,
           [action.payload.projectId]: true,
+        },
+      };
+    case END_EDITING_PROJECT:
+      // Set edit mode for a specific project to false
+      return {
+        ...state,
+        editMode: {
+          ...state.editMode,
+          [action.payload.projectId]: false,
         },
       };
     default:

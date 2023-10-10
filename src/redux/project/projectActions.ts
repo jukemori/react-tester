@@ -1,7 +1,5 @@
 // projectActions.ts
 
-import axios, { AxiosResponse } from "axios";
-
 // Action Types
 export const FETCH_PROJECTS = "FETCH_PROJECTS";
 export const FETCH_PROJECTS_SUCCESS = "FETCH_PROJECTS_SUCCESS";
@@ -16,6 +14,7 @@ export const CREATE_PROJECT = "CREATE_PROJECT";
 export const CREATE_PROJECT_SUCCESS = "CREATE_PROJECT_SUCCESS";
 export const CREATE_PROJECT_FAILURE = "CREATE_PROJECT_FAILURE";
 export const START_EDITING_PROJECT = "START_EDITING_PROJECT";
+export const END_EDITING_PROJECT = "END_EDITING_PROJECT";
 
 // Interfaces
 export interface Project {
@@ -106,11 +105,27 @@ interface StartEditingProjectAction {
   };
 }
 
+interface EndEditingProjectAction {
+  type: typeof END_EDITING_PROJECT;
+  payload: {
+    projectId: number;
+  };
+}
+
 // Action creator to start editing a project
 export const startEditingProject = (
   projectId: number
 ): StartEditingProjectAction => ({
   type: START_EDITING_PROJECT,
+  payload: {
+    projectId,
+  },
+});
+
+export const endEditingProject = (
+  projectId: number
+): EndEditingProjectAction => ({
+  type: END_EDITING_PROJECT,
   payload: {
     projectId,
   },
@@ -203,4 +218,5 @@ export type ProjectActionTypes =
   | CreateProjectAction
   | CreateProjectSuccessAction
   | CreateProjectFailureAction
-  | StartEditingProjectAction;
+  | StartEditingProjectAction
+  | EndEditingProjectAction;
